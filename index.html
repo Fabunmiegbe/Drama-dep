@@ -1323,7 +1323,7 @@ footer{
         </div>
         <div class="form-group">
           <label class="form-label">Profile Picture</label>
-          <input class="form-input" type="file" accept="image/*" style="padding:10px"/>
+          <input class="form-input" type="file" accept="image/*" style="padding:10px" onchange="window.handleProfileUpload(this)"/>
         </div>
         <div style="margin:20px 0;display:flex;gap:10px;align-items:flex-start">
           <input type="checkbox" id="agree" style="margin-top:4px"/>
@@ -1393,7 +1393,7 @@ footer{
               </select>
             </div>
             <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" placeholder="Your message here..." style="min-height:150px"></textarea></div>
-            <button class="btn btn-gold w-full" style="justify-content:center" onclick="showNotif('✅','Message Sent!','Thank you! We\'ll be in touch within 48 hours.')">Send Message</button>
+            <button class="btn btn-gold w-full" style="justify-content:center" onclick="window.submitContact()">Send Message</button>
           </div>
           <!-- MAP PLACEHOLDER -->
           <div style="margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;height:220px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px">
@@ -1443,7 +1443,7 @@ footer{
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border)">
+        <div id="admin-role-display" style="display:flex;align-items:center;gap:8px;background:var(--surface2);padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border)">
           <span class="online-dot"></span>
           <span style="font-size:13px;color:var(--white)">Super Admin</span>
           <span class="badge badge-blue" style="font-size:10px">✓ Verified</span>
@@ -1488,23 +1488,19 @@ footer{
         <div class="admin-view active" id="view-dashboard">
           <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;margin-bottom:24px;font-weight:700">Ministry Overview</h2>
           <div class="stats-grid">
-            <div class="stat-card"><div class="stat-card-label">Total Members</div><div class="stat-card-num">1,247</div><div class="stat-card-change">↑ 23 this month</div></div>
-            <div class="stat-card"><div class="stat-card-label">Pending Applications</div><div class="stat-card-num" style="color:var(--red-light)">18</div><div class="stat-card-change" style="color:var(--muted)">Awaiting review</div></div>
-            <div class="stat-card"><div class="stat-card-label">Upcoming Events</div><div class="stat-card-num">7</div><div class="stat-card-change">Next: Jul 14</div></div>
+            <div class="stat-card"><div class="stat-card-label">Total Members</div><div class="stat-card-num" id="stat-members">—</div><div class="stat-card-change">Live from Firestore</div></div>
+            <div class="stat-card"><div class="stat-card-label">Pending Applications</div><div class="stat-card-num" id="stat-pending" style="color:var(--red-light)">—</div><div class="stat-card-change" style="color:var(--muted)">Awaiting review</div></div>
+            <div class="stat-card"><div class="stat-card-label">Upcoming Events</div><div class="stat-card-num" id="stat-events">—</div><div class="stat-card-change">Live from Firestore</div></div>
             <div class="stat-card"><div class="stat-card-label">Nations Reached</div><div class="stat-card-num">31</div><div class="stat-card-change">↑ 1 this quarter</div></div>
-            <div class="stat-card"><div class="stat-card-label">Gallery Items</div><div class="stat-card-num">842</div><div class="stat-card-change">Photos & Videos</div></div>
-            <div class="stat-card"><div class="stat-card-label">Blog Posts</div><div class="stat-card-num">156</div><div class="stat-card-change">↑ 4 this week</div></div>
+            <div class="stat-card"><div class="stat-card-label">Gallery Items</div><div class="stat-card-num" id="stat-gallery">—</div><div class="stat-card-change">Photos & Videos</div></div>
+            <div class="stat-card"><div class="stat-card-label">Blog Posts</div><div class="stat-card-num" id="stat-blog">—</div><div class="stat-card-change">Live from Firestore</div></div>
           </div>
 
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
             <div class="admin-panel">
               <div class="admin-panel-title">🔔 Recent Activity</div>
-              <div class="activity-log">
-                <div class="log-item"><div class="log-icon green">✅</div><div class="log-text"><strong>New Member Approved</strong><br/>Chisom Okafor joined the Acting department.</div><div class="log-time">2m ago</div></div>
-                <div class="log-item"><div class="log-icon blue">📢</div><div class="log-text"><strong>Announcement Published</strong><br/>National Drama Convention 2025 details posted.</div><div class="log-time">1h ago</div></div>
-                <div class="log-item"><div class="log-icon gold">🖼</div><div class="log-text"><strong>Gallery Updated</strong><br/>12 photos added to Easter 2024 album.</div><div class="log-time">3h ago</div></div>
-                <div class="log-item"><div class="log-icon red">🚫</div><div class="log-text"><strong>Application Declined</strong><br/>Application from an unverified parish rejected.</div><div class="log-time">5h ago</div></div>
-                <div class="log-item"><div class="log-icon blue">✓</div><div class="log-text"><strong>Admin Verified</strong><br/>Pastor James Adeyemi granted Regional Admin.</div><div class="log-time">Yesterday</div></div>
+              <div class="activity-log" id="activity-recent">
+                <div style="color:var(--muted);text-align:center;padding:20px">Loading activity...</div>
               </div>
             </div>
             <div class="admin-panel">
@@ -1541,15 +1537,37 @@ footer{
             <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;font-weight:700">Administrator Management</h2>
             <button class="btn btn-gold btn-sm" onclick="showNotif('🛡','Admin Added','Invite new admin form would open here.')">+ Invite Admin</button>
           </div>
+          <!-- INVITE NEW ADMIN FORM -->
+          <div class="admin-panel" style="margin-bottom:24px">
+            <div class="admin-panel-title">➕ Add New Administrator</div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" id="new-admin-name" placeholder="e.g. Pastor John Doe"/></div>
+              <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" type="email" id="new-admin-email" placeholder="admin@rccg.org"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Admin Role</label>
+                <select class="form-select" id="new-admin-role">
+                  <option value="Super Admin">Super Admin</option>
+                  <option value="National Admin">National Admin</option>
+                  <option value="Regional Admin">Regional Admin</option>
+                  <option value="Content Manager">Content Manager</option>
+                  <option value="Moderator">Moderator</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Temporary Password</label><input class="form-input" type="password" id="new-admin-pass" placeholder="Min. 8 characters"/></div>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <button class="btn btn-gold" onclick="window.createAdmin()">🛡 Create Admin Account</button>
+              <p style="font-size:12px;color:var(--muted);align-self:center">Creates a Firebase Auth account + saves role to Firestore. The new admin can change their password after first login.</p>
+            </div>
+          </div>
+          <!-- LIVE ADMINS TABLE -->
           <div class="admin-panel">
+            <div class="admin-panel-title">🛡 Active Administrators</div>
             <table class="data-table">
-              <thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Last Active</th><th>Verified</th><th>Actions</th></tr></thead>
-              <tbody>
-                <tr><td><div style="display:flex;align-items:center;gap:8px"><span class="online-dot"></span>Rev. Adebayo Oluwaseun</div></td><td><span class="badge badge-gold">Super Admin</span></td><td><span class="badge badge-green">Active</span></td><td>Now</td><td><span class="badge badge-blue">✓ Verified</span></td><td class="table-actions"><button class="action-btn">Edit</button></td></tr>
-                <tr><td>Deacon James Chukwu</td><td><span class="badge badge-blue">National Admin</span></td><td><span class="badge badge-green">Active</span></td><td>2h ago</td><td><span class="badge badge-blue">✓ Verified</span></td><td class="table-actions"><button class="action-btn">Edit</button><button class="action-btn danger" onclick="showNotif('⚠','Revoke Access','Admin access revocation requires confirmation.')">Revoke</button></td></tr>
-                <tr><td>Sis. Grace Mensah</td><td><span class="badge" style="background:rgba(168,85,247,0.1);color:#C084FC;border:1px solid rgba(168,85,247,0.2)">Regional Admin</span></td><td><span class="badge badge-green">Active</span></td><td>1d ago</td><td><span class="badge badge-blue">✓ Verified</span></td><td class="table-actions"><button class="action-btn">Edit</button><button class="action-btn danger">Revoke</button></td></tr>
-                <tr><td>Bro. Emmanuel Osei</td><td><span class="badge" style="background:rgba(20,184,166,0.1);color:#2DD4BF;border:1px solid rgba(20,184,166,0.2)">Content Manager</span></td><td><span class="badge badge-red">Suspended</span></td><td>5d ago</td><td><span class="badge badge-red">✗ Revoked</span></td><td class="table-actions"><button class="action-btn">Restore</button><button class="action-btn danger">Remove</button></td></tr>
-              </tbody>
+              <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Status</th><th>Verified</th><th>Actions</th></tr></thead>
+              <tbody id="admins-table"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Loading administrators...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -1593,14 +1611,14 @@ footer{
           <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;margin-bottom:24px;font-weight:700">Website Settings</h2>
           <div class="admin-panel">
             <div class="admin-panel-title">🏠 Homepage Content</div>
-            <div class="form-group"><label class="form-label">Hero Headline</label><input class="form-input" type="text" value="Where Faith Meets the Stage"/></div>
-            <div class="form-group"><label class="form-label">Hero Subtext</label><textarea class="form-textarea" style="min-height:80px">An anointed drama ministry delivering God's word through the art of performance...</textarea></div>
+            <div class="form-group"><label class="form-label">Hero Headline</label><input class="form-input" type="text" id="settings-headline" value="Where Faith Meets the Stage"/></div>
+            <div class="form-group"><label class="form-label">Hero Subtext</label><textarea class="form-textarea" id="settings-subtext" style="min-height:80px">An anointed drama ministry delivering God's word through the art of performance...</textarea></div>
             <div class="form-group"><label class="form-label">Ministry Stats — Members</label><input class="form-input" type="number" value="1247"/></div>
             <div class="form-row">
               <div class="form-group"><label class="form-label">Productions Count</label><input class="form-input" type="number" value="200"/></div>
               <div class="form-group"><label class="form-label">Nations Count</label><input class="form-input" type="number" value="30"/></div>
             </div>
-            <button class="btn btn-gold" onclick="showNotif('✅','Settings Saved','Homepage content updated successfully.')">Save Changes</button>
+            <button class="btn btn-gold" onclick="window.saveSettings()">Save to Firestore</button>
           </div>
           <div class="admin-panel">
             <div class="admin-panel-title">✉ Email Notifications</div>
@@ -1614,21 +1632,20 @@ footer{
           </div>
         </div>
 
-        <!-- OTHER ADMIN VIEWS (PLACEHOLDER) -->
+        <!-- EVENTS ADMIN -->
         <div class="admin-view" id="view-events-admin">
           <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;margin-bottom:24px;font-weight:700">Events Management</h2>
-          <div style="display:flex;justify-content:flex-end;margin-bottom:20px"><button class="btn btn-gold btn-sm" onclick="showNotif('📅','New Event','Event creation form ready.')">+ Add Event</button></div>
-          <div class="admin-panel"><div style="color:var(--muted);text-align:center;padding:40px">Events list — connect to Firestore to load live data.</div></div>
+          <div id="events-admin-panel"></div>
         </div>
+        <!-- GALLERY ADMIN -->
         <div class="admin-view" id="view-gallery-admin">
           <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;margin-bottom:24px;font-weight:700">Gallery Management</h2>
-          <div style="display:flex;justify-content:flex-end;margin-bottom:20px"><button class="btn btn-gold btn-sm" onclick="showNotif('🖼','Upload','Media upload form ready — connect to Firebase Storage.')">Upload Media</button></div>
-          <div class="admin-panel"><div style="color:var(--muted);text-align:center;padding:40px">Gallery management — connect to Firebase Storage to load media.</div></div>
+          <div id="gallery-admin-panel"></div>
         </div>
+        <!-- BLOG ADMIN -->
         <div class="admin-view" id="view-blog-admin">
           <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;margin-bottom:24px;font-weight:700">Blog & Scripts</h2>
-          <div style="display:flex;justify-content:flex-end;margin-bottom:20px"><button class="btn btn-gold btn-sm" onclick="showNotif('📝','New Post','Rich text editor ready for new blog post.')">+ New Post</button></div>
-          <div class="admin-panel"><div style="color:var(--muted);text-align:center;padding:40px">Blog post management — verified admins only can publish content.</div></div>
+          <div id="blog-admin-panel"></div>
         </div>
         <div class="admin-view" id="view-announcements">
           <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;margin-bottom:24px;font-weight:700">Announcements</h2>
@@ -1640,7 +1657,7 @@ footer{
               <label class="form-label">Target Audience</label>
               <select class="form-select"><option>All Members</option><option>Leaders Only</option><option>Specific Department</option><option>Regional Members</option></select>
             </div>
-            <button class="btn btn-gold" onclick="showNotif('📢','Announcement Published','Your announcement has been sent to all members.')">Publish Announcement</button>
+            <button class="btn btn-gold" onclick="window.publishAnnouncement()">Publish Announcement</button>
           </div>
         </div>
         <div class="admin-view" id="view-notifications-admin">
@@ -1665,8 +1682,8 @@ footer{
         <div class="logo-text">RCCG Global Drama</div>
         <p>An anointed drama ministry of the Redeemed Christian Church of God — spreading the gospel through the power of performance to every nation on earth.</p>
         <div class="newsletter-form">
-          <input type="email" placeholder="Your email address"/>
-          <button onclick="showNotif('✅','Subscribed!','Welcome to the RCCG Global Drama newsletter.')">Subscribe</button>
+          <input type="email" placeholder="Your email address" id="footer-email"/>
+          <button onclick="window.subscribeNewsletter(document.getElementById('footer-email'))">Subscribe</button>
         </div>
       </div>
       <div>
@@ -1707,8 +1724,813 @@ footer{
   </div>
 </footer>
 
-<script>
-// ==================== DATA ====================
+<script type="module">
+// ==================== FIREBASE + CLOUDINARY BACKEND ====================
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, doc, addDoc, getDocs, getDoc, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFw8spUvTyVulpw7fOr3E7uzcqsqYkTOA",
+  authDomain: "drama-3d72f.firebaseapp.com",
+  projectId: "drama-3d72f",
+  storageBucket: "drama-3d72f.firebasestorage.app",
+  messagingSenderId: "916850943958",
+  appId: "1:916850943958:web:6298eec7ff76fff88d2677",
+  measurementId: "G-D5KC1BKYFY"
+};
+const CLOUDINARY_CLOUD = 'dhqjkpfzy';
+const CLOUDINARY_PRESET = 'ml_default';
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ==================== AUTH STATE ====================
+let currentUser = null;
+let currentUserData = null;
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    try {
+      const snap = await getDoc(doc(db, 'admins', user.uid));
+      if (snap.exists()) {
+        currentUserData = snap.data();
+        await updateDoc(doc(db,'admins',user.uid),{online:true,lastActive:serverTimestamp()});
+      }
+    } catch(e){}
+    updateAdminUI();
+  } else {
+    currentUser = null; currentUserData = null;
+  }
+});
+
+function updateAdminUI(){
+  if(!currentUser)return;
+  const role=currentUserData?.role||'Admin';
+  const name=currentUserData?.name||currentUser.email;
+  const el=document.getElementById('admin-role-display');
+  if(el)el.innerHTML=`<span class="online-dot"></span><span style="font-size:13px;color:var(--white)">${name}</span><span class="badge badge-blue" style="font-size:10px">✓ ${role}</span>`;
+}
+
+// ==================== HELPERS ====================
+function memberCard(m){
+  return `<div class="member-card">
+    <div class="member-avatar" style="background:${m.color||'#C0392B'}22;border-color:${m.color||'#C0392B'}66;position:relative">
+      ${m.profileUrl?`<img src="${m.profileUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`:`<span style="color:${m.color||'#C0392B'}">${m.initials||m.name?.substring(0,2).toUpperCase()||'??'}</span>`}
+      ${m.online?'<span style="position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:#22C55E;border-radius:50%;border:2px solid var(--surface)"></span>':''}
+    </div>
+    <div class="member-name">${m.name}</div>
+    <div class="member-role">${m.role||'Member'}</div>
+    <div class="member-dept">${m.dept||''} Department</div>
+    ${m.isAdmin?'<div class="verified-badge">✓ Verified Admin</div>':''}
+    ${m.online?'<div class="status-online"><span class="online-dot"></span>Active Now</div>':`<div class="status-offline">Last active: ${m.lastSeen||'Unknown'}</div>`}
+  </div>`;
+}
+
+function eventCard(e){
+  const dateStr=e.date||`${e.month} ${e.day}, ${e.year}`;
+  return `<div class="event-card fade-up">
+    <div class="event-date-block"><div class="event-day">${e.day||'—'}</div><div class="event-month">${e.month||'—'}</div></div>
+    <div class="event-info">
+      <div class="event-title">${e.title}</div>
+      <div class="event-meta"><span>📍 ${e.loc||''}</span><span>⏰ ${e.time||''}</span><span>🎟 ${e.ticket||''}</span><span class="badge badge-gold">${e.cat||''}</span></div>
+      <p class="event-desc">${e.desc||''}</p>
+      <div class="countdown" data-countdown="${e.date||dateStr}"></div>
+    </div>
+    <button class="btn btn-red btn-sm" style="flex-shrink:0;align-self:center" onclick="window.rsvpEvent('${e.id}','${e.title.replace(/'/g,"\\'")}')">RSVP Now</button>
+  </div>`;
+}
+
+function timeAgo(date){
+  const sec=Math.floor((new Date()-date)/1000);
+  if(sec<60)return 'Just now';
+  if(sec<3600)return `${Math.floor(sec/60)}m ago`;
+  if(sec<86400)return `${Math.floor(sec/3600)}h ago`;
+  return `${Math.floor(sec/86400)}d ago`;
+}
+
+function startCountdowns(){
+  document.querySelectorAll('[data-countdown]').forEach(el=>{
+    const dateStr=el.getAttribute('data-countdown');
+    if(!dateStr)return;
+    function tick(){
+      const diff=Math.max(0,new Date(dateStr)-new Date());
+      const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
+      const m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+      el.innerHTML=`<div class="countdown-unit"><div class="countdown-num">${d}</div><div class="countdown-label">Days</div></div><div class="countdown-unit"><div class="countdown-num">${h}</div><div class="countdown-label">Hours</div></div><div class="countdown-unit"><div class="countdown-num">${m}</div><div class="countdown-label">Mins</div></div><div class="countdown-unit"><div class="countdown-num">${s}</div><div class="countdown-label">Secs</div></div>`;
+    }
+    tick(); setInterval(tick,1000);
+  });
+}
+
+// ==================== CLOUDINARY UPLOAD ====================
+window.uploadToCloudinary = async function(file,folder='gallery'){
+  const fd=new FormData();
+  fd.append('file',file); fd.append('upload_preset',CLOUDINARY_PRESET); fd.append('folder',`rccg_drama/${folder}`);
+  const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`,{method:'POST',body:fd});
+  const data=await res.json();
+  if(data.error)throw new Error(data.error.message);
+  return data.secure_url;
+};
+
+window.handleProfileUpload = async function(input){
+  if(!input.files[0])return;
+  showNotif('⏳','Uploading...','Uploading your profile picture...');
+  try{const url=await window.uploadToCloudinary(input.files[0],'profiles');input.dataset.uploadedUrl=url;showNotif('✅','Photo Uploaded!','Profile picture uploaded successfully.');}
+  catch(e){showNotif('⚠','Upload Failed',e.message);}
+};
+
+// ==================== MEMBERS ====================
+window.loadMembers = async function(){
+  const grid=document.getElementById('members-grid');
+  const lgrid=document.getElementById('leadership-grid');
+  if(!grid)return;
+  grid.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1">Loading members...</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'members'),orderBy('name')));
+    const all=[];snap.forEach(d=>all.push({id:d.id,...d.data()}));
+    if(all.length===0){await seedMembers();window.loadMembers();return;}
+    if(lgrid)lgrid.innerHTML=all.filter(m=>m.isLeader).map(memberCard).join('')||'<div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:20px">No leaders yet.</div>';
+    grid.innerHTML=all.filter(m=>!m.isLeader).map(memberCard).join('')||'<div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:20px">No members yet.</div>';
+  }catch(e){grid.innerHTML=`<div style="color:var(--red-light);text-align:center;padding:40px;grid-column:1/-1">Could not load members.<br><small style="color:var(--muted)">${e.message}</small></div>`;}
+};
+
+async function seedMembers(){
+  const sample=[
+    {name:"Rev. Adebayo Oluwaseun",role:"Director of Drama",dept:"Leadership",initials:"AO",color:"#C0392B",isAdmin:true,online:true,isLeader:true},
+    {name:"Deacon James Chukwu",role:"Deputy Director",dept:"Leadership",initials:"JC",color:"#922B21",isAdmin:true,online:false,lastSeen:"2 hours ago",isLeader:true},
+    {name:"Sis. Grace Mensah",role:"Creative Director",dept:"Leadership",initials:"GM",color:"#9B7D1F",isAdmin:true,online:true,isLeader:true},
+    {name:"Chisom Okafor",role:"Lead Actress",dept:"Acting",initials:"CO",color:"#1D8348",isAdmin:false,online:true,isLeader:false},
+    {name:"David Adeyemi",role:"Lead Actor",dept:"Acting",initials:"DA",color:"#6C3483",isAdmin:false,online:false,lastSeen:"3 days ago",isLeader:false},
+    {name:"Pastor Funmi Alade",role:"Worship & Drama Lead",dept:"Music",initials:"FA",color:"#C0392B",isAdmin:false,online:true,isLeader:false},
+    {name:"Tobi Fashola",role:"Stage Manager",dept:"Stage Management",initials:"TF",color:"#17202A",isAdmin:false,online:false,lastSeen:"1 day ago",isLeader:false},
+    {name:"Adaeze Nwosu",role:"Makeup Artist",dept:"Makeup",initials:"AN",color:"#922B21",isAdmin:false,online:true,isLeader:false},
+  ];
+  for(const m of sample)await addDoc(collection(db,'members'),{...m,createdAt:serverTimestamp()});
+}
+
+window.filterMembers = async function(){
+  const search=(document.getElementById('member-search')?.value||'').toLowerCase();
+  const dept=document.getElementById('dept-filter')?.value||'';
+  try{
+    const snap=await getDocs(collection(db,'members'));
+    const all=[];snap.forEach(d=>all.push({id:d.id,...d.data()}));
+    const filtered=all.filter(m=>(!search||m.name?.toLowerCase().includes(search)||m.dept?.toLowerCase().includes(search))&&(!dept||m.dept===dept));
+    const lg=document.getElementById('leadership-grid'),mg=document.getElementById('members-grid');
+    if(lg)lg.innerHTML=filtered.filter(m=>m.isLeader).map(memberCard).join('');
+    if(mg)mg.innerHTML=filtered.filter(m=>!m.isLeader).map(memberCard).join('')||'<div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:20px">No results found.</div>';
+  }catch(e){}
+};
+
+// ==================== EVENTS ====================
+window.loadEvents = async function(catFilter='All'){
+  const el=document.getElementById('events-list');
+  if(!el)return;
+  el.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px">Loading events...</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'events'),orderBy('date')));
+    let events=[];snap.forEach(d=>events.push({id:d.id,...d.data()}));
+    if(events.length===0){await seedEvents();window.loadEvents(catFilter);return;}
+    if(catFilter!=='All')events=events.filter(e=>e.cat===catFilter);
+    el.innerHTML=events.map(e=>eventCard(e)).join('')||'<div style="color:var(--muted);text-align:center;padding:40px">No events found.</div>';
+    startCountdowns();
+    initFadeUps();
+  }catch(err){el.innerHTML=`<div style="color:var(--red-light);text-align:center;padding:40px">Could not load events.<br><small style="color:var(--muted)">${err.message}</small></div>`;}
+};
+
+async function seedEvents(){
+  const evts=[
+    {day:"14",month:"Jul",year:2025,title:"National Drama Convention 2025",loc:"RCCG National Theatre, Lagos",time:"9:00 AM – 6:00 PM",ticket:"Free Entry",cat:"Conference",desc:"Annual gathering of drama ministers across all RCCG zones for training, performances, and impartation.",date:"2025-07-14"},
+    {day:"22",month:"Aug",year:2025,title:"Cross-Border Evangelism Drama Tour",loc:"Accra, Ghana & Abidjan",time:"Multiple Sessions",ticket:"Open Public",cat:"Outreach",desc:"A 5-city evangelism drama tour across West Africa, taking the gospel to streets and markets.",date:"2025-08-22"},
+    {day:"19",month:"Oct",year:2025,title:"Supernatural Drama Night",loc:"RCCG HQ Auditorium",time:"5:00 PM – 9:00 PM",ticket:"Registration Required",cat:"Production",desc:"A night of powerful drama ministration — three full productions performed back-to-back.",date:"2025-10-19"},
+    {day:"25",month:"Dec",year:2025,title:"Christmas Drama Spectacular 2025",loc:"National Stadium, Lagos",time:"4:00 PM – 11:00 PM",ticket:"Free Entry",cat:"Production",desc:"The grandest drama production of the year — cast of 120 performers, live orchestra.",date:"2025-12-25"},
+  ];
+  for(const e of evts)await addDoc(collection(db,'events'),{...e,createdAt:serverTimestamp()});
+}
+
+window.filterEvents = function(cat,btn){
+  document.querySelectorAll('#page-events .filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  window.loadEvents(cat);
+};
+
+window.rsvpEvent = async function(eventId,eventTitle){
+  try{
+    await addDoc(collection(db,'rsvps'),{eventId,eventTitle,email:currentUser?.email||'guest',timestamp:serverTimestamp()});
+    showNotif('✅','RSVP Confirmed!',`You are registered for ${eventTitle}.`);
+  }catch(e){showNotif('✅','RSVP Noted!',`You are registered for ${eventTitle}. Sign in to save your spot permanently.`);}
+};
+
+// ==================== GALLERY ====================
+window.loadGallery = async function(catFilter='All',type='photos'){
+  const pg=document.getElementById('gallery-photos');
+  const vg=document.getElementById('gallery-videos');
+  if(!pg||!vg)return;
+  const coll=type==='photos'?'gallery':'videos';
+  try{
+    const snap=await getDocs(query(collection(db,coll),orderBy('createdAt','desc')));
+    let items=[];snap.forEach(d=>items.push({id:d.id,...d.data()}));
+    if(items.length===0&&type==='photos'){await seedGallery();window.loadGallery(catFilter,type);return;}
+    if(catFilter!=='All')items=items.filter(i=>i.cat===catFilter);
+    if(type==='photos'){
+      pg.style.display='grid';vg.style.display='none';
+      pg.innerHTML=items.map(g=>`
+        <div class="gallery-item" onclick="window.openLightbox('${g.imageUrl||''}','${(g.title||'').replace(/'/g,"\\'")}',false)">
+          ${g.imageUrl?`<img src="${g.imageUrl}" style="width:100%;height:100%;object-fit:cover" loading="lazy"/>`:`<span>${g.emoji||'🎭'}</span>`}
+          <div class="gallery-overlay"><span style="font-size:28px">🔍</span><div class="gallery-overlay-title">${g.title||''}</div><span class="badge badge-gold">${g.cat||''}</span></div>
+        </div>`).join('')||'<div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1">No photos yet. Upload from the admin panel.</div>';
+    }else{
+      pg.style.display='none';vg.style.display='grid';
+      vg.innerHTML=items.map(v=>`
+        <div class="card" style="cursor:pointer" onclick="window.openLightbox('${v.videoUrl||''}','${(v.title||'').replace(/'/g,"\\'")}',true)">
+          <div style="height:180px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative">
+            ${v.thumbnailUrl?`<img src="${v.thumbnailUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.6"/>`:''}
+            <div style="width:60px;height:60px;border-radius:50%;background:rgba(192,57,43,0.85);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;z-index:1">▶</div>
+            <span class="badge badge-gold" style="position:relative;z-index:1">${v.cat||''}</span>
+          </div>
+          <div style="padding:16px">
+            <div style="font-family:var(--font-serif);color:var(--white);font-size:14px;font-weight:700;margin-bottom:4px">${v.title||''}</div>
+            <div style="font-size:12px;color:var(--muted)">⏱ ${v.duration||''}</div>
+          </div>
+        </div>`).join('')||'<div style="color:var(--muted);text-align:center;padding:40px">No videos yet.</div>';
+    }
+  }catch(err){if(pg)pg.innerHTML=`<div style="color:var(--red-light);text-align:center;padding:40px;grid-column:1/-1">Could not load gallery.<br><small style="color:var(--muted)">${err.message}</small></div>`;}
+};
+
+async function seedGallery(){
+  const items=[
+    {emoji:'✝',title:'Passion of Christ — Easter 2024',cat:'Easter'},
+    {emoji:'⭐',title:'Emmanuel — Christmas 2023',cat:'Christmas'},
+    {emoji:'🕊',title:'Street Evangelism — Surulere 2024',cat:'Evangelism'},
+    {emoji:'🎭',title:'National Convention 2023',cat:'Conference'},
+    {emoji:'👦',title:'Youth Drama Night 2024',cat:'Youth'},
+    {emoji:'🌍',title:'UK Tour — Manchester 2023',cat:'Evangelism'},
+  ];
+  for(const i of items)await addDoc(collection(db,'gallery'),{...i,createdAt:serverTimestamp()});
+}
+
+window.openLightbox = function(url,title,isVideo=false){
+  if(!url){showNotif('🖼',title,'Media file not available yet.');return;}
+  document.getElementById('modal-content').innerHTML=`
+    <div style="margin-bottom:12px;font-family:var(--font-serif);color:var(--white);font-size:1.1rem;font-weight:700">${title}</div>
+    ${isVideo?`<video src="${url}" controls style="width:100%;border-radius:var(--radius);max-height:400px"></video>`:`<img src="${url}" style="width:100%;border-radius:var(--radius);max-height:500px;object-fit:contain"/>`}`;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+};
+
+window.filterGallery = function(cat,btn){
+  document.querySelectorAll('#page-gallery .filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  window.loadGallery(cat,'photos');
+};
+
+window.switchGalleryTab = function(tab){
+  const pt=document.getElementById('photos-tab'),vt=document.getElementById('videos-tab');
+  const gf=document.getElementById('gallery-filter');
+  if(tab==='photos'){
+    pt.className='btn btn-gold btn-sm';vt.className='btn btn-outline btn-sm';
+    if(gf)gf.style.display='flex';window.loadGallery('All','photos');
+  }else{
+    pt.className='btn btn-outline btn-sm';vt.className='btn btn-gold btn-sm';
+    if(gf)gf.style.display='none';window.loadGallery('All','videos');
+  }
+};
+
+// ==================== BLOG ====================
+window.loadBlog = async function(tagFilter='All'){
+  const el=document.getElementById('blog-grid');
+  if(!el)return;
+  el.innerHTML='<div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1">Loading posts...</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'blog'),orderBy('createdAt','desc')));
+    let posts=[];snap.forEach(d=>posts.push({id:d.id,...d.data()}));
+    if(posts.length===0){await seedBlog();window.loadBlog(tagFilter);return;}
+    if(tagFilter!=='All')posts=posts.filter(p=>p.tag===tagFilter);
+    const tags={'Script':'📜','Devotional':'📖','Testimony':'🙏','News':'📢'};
+    el.innerHTML=posts.map(b=>`
+      <div class="blog-card">
+        <div class="blog-img">${b.imageUrl?`<img src="${b.imageUrl}" style="width:100%;height:100%;object-fit:cover"/>`:`<span>${tags[b.tag]||'📝'}</span>`}</div>
+        <div class="blog-body">
+          <span class="blog-tag">${b.tag||'News'}</span>
+          <div class="blog-title">${b.title}</div>
+          <p class="blog-excerpt">${b.excerpt||(b.content?.substring(0,120)+'...')||''}</p>
+          <div class="blog-footer">
+            <span>${b.createdAt?.toDate?b.createdAt.toDate().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):b.date||''}</span>
+            <span style="color:var(--gold)">${b.author||''}</span>
+          </div>
+          <button class="btn btn-outline btn-sm" style="margin-top:14px;width:100%;justify-content:center" onclick="window.openBlogPost('${b.id}')">Read More</button>
+        </div>
+      </div>`).join('')||'<div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px">No posts yet.</div>';
+  }catch(err){el.innerHTML=`<div style="color:var(--red-light);text-align:center;padding:40px;grid-column:1/-1">Could not load blog.<br><small style="color:var(--muted)">${err.message}</small></div>`;}
+};
+
+async function seedBlog(){
+  const posts=[
+    {tag:'Devotional',title:'Carrying the Anointing onto Every Stage',excerpt:'True Christian drama begins not in rehearsal but on your knees. Discover how to carry the manifest presence of God into every performance.',content:'True Christian drama begins not in rehearsal but on your knees. The anointing of the Holy Spirit is what separates a performance from a ministry. When you step onto that stage, you carry not just your lines but the very presence of God. Pray before every rehearsal. Fast before every major production. And let God use your yielded vessel to touch hearts that no sermon could reach.',author:'Rev. Adebayo',date:'Jun 12, 2025'},
+    {tag:'Testimony',title:'How a Drama Changed My Life Forever',excerpt:'I walked into the venue an atheist. I walked out a believer.',content:'I had never set foot in a church willingly. My cousin dragged me to what she called "a show". What I saw that night was not entertainment — it was a mirror. The drama about the prodigal son showed me my own life on that stage. When the altar call came, I was the first person standing. That was 3 years ago. Today I serve in this very drama ministry. God used a stage to save my soul.',author:'Chidera O.',date:'Jun 8, 2025'},
+    {tag:'News',title:'RCCG Drama Wins International Ministry Award 2024',excerpt:'We are honoured to announce that RCCG Global Drama has received the Global Christian Drama Excellence Award.',content:'The Global Christian Drama Excellence Award 2024 was presented to RCCG Global Drama at the International Christian Arts Conference in London. This recognition honours our 15+ years of faithful ministry, our cross-border evangelism tours, and our commitment to raising the standard of Christian drama worldwide. All glory to God.',author:'Admin',date:'Jun 1, 2025'},
+    {tag:'News',title:'2025 Drama Ministry Recruitment Now Open',excerpt:'We are now accepting applications for the 2025 drama ministry intake.',content:'We are now accepting applications for the 2025 drama ministry intake. We are looking for actors, directors, stage managers, musicians, makeup artists, lighting technicians, and script writers. All applicants must be active members of an RCCG parish. Apply via the Join Us page.',author:'Admin',date:'May 15, 2025'},
+  ];
+  for(const p of posts)await addDoc(collection(db,'blog'),{...p,createdAt:serverTimestamp()});
+}
+
+window.filterBlog = function(tag,btn){
+  document.querySelectorAll('#page-blog .filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  window.loadBlog(tag);
+};
+
+window.openBlogPost = async function(id){
+  try{
+    const snap=await getDoc(doc(db,'blog',id));
+    if(!snap.exists())return;
+    const p=snap.data();
+    document.getElementById('modal-content').innerHTML=`
+      <div class="blog-tag" style="margin-bottom:12px">${p.tag||'News'}</div>
+      <div class="modal-title" style="font-size:1.2rem;margin-bottom:8px">${p.title}</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:20px">${p.author||''} · ${p.date||''}</div>
+      <div style="color:var(--off-white);line-height:1.9;font-size:15px">${p.content||p.excerpt||''}</div>`;
+    document.getElementById('modal-overlay').classList.remove('hidden');
+  }catch(e){}
+};
+
+// ==================== JOIN / APPLICATION ====================
+window.submitApplication = async function(){
+  const fname=document.querySelector('#page-join input[placeholder="John"]')?.value?.trim();
+  const lname=document.querySelector('#page-join input[placeholder="Doe"]')?.value?.trim();
+  const email=document.querySelector('#page-join input[type="email"]')?.value?.trim();
+  const phone=document.querySelector('#page-join input[type="tel"]')?.value?.trim();
+  const selects=document.querySelectorAll('#page-join select');
+  const dept=selects[0]?.value;
+  const parish=document.querySelector('#page-join input[placeholder*="RCCG House"]')?.value?.trim();
+  const countryEl=selects[2]?.value;
+  const agree=document.getElementById('agree')?.checked;
+  if(!fname||!lname||!email||!dept){showNotif('⚠','Missing Fields','Please fill in all required fields.');return;}
+  if(!agree){showNotif('⚠','Agreement Required','Please agree to the code of conduct to continue.');return;}
+  const profileInput=document.querySelector('#page-join input[type="file"]');
+  let profileUrl='';
+  if(profileInput?.files[0]){
+    showNotif('⏳','Uploading photo...','Please wait...');
+    try{profileUrl=await window.uploadToCloudinary(profileInput.files[0],'profiles');}catch(e){}
+  }
+  showNotif('⏳','Submitting...','Sending your application to Firestore...');
+  try{
+    await addDoc(collection(db,'applications'),{
+      name:`${fname} ${lname}`,email,phone,dept,parish,country:countryEl,
+      profileUrl,status:'Pending',createdAt:serverTimestamp()
+    });
+    await addDoc(collection(db,'activityLog'),{icon:'📋',cls:'blue',text:`New application from ${fname} ${lname} (${dept}).`,timestamp:serverTimestamp()});
+    showNotif('✅','Application Submitted!','Thank you! Our team will review your application within 7 days.');
+  }catch(e){showNotif('⚠','Submission Error',e.message);}
+};
+
+// ==================== CONTACT ====================
+window.submitContact = async function(){
+  const name=document.querySelector('#page-contact input[placeholder="Full name"]')?.value?.trim();
+  const email=document.querySelector('#page-contact input[placeholder="your@email.com"]')?.value?.trim();
+  const msg=document.querySelector('#page-contact textarea')?.value?.trim();
+  if(!name||!email||!msg){showNotif('⚠','Missing Fields','Please fill in all fields.');return;}
+  try{
+    await addDoc(collection(db,'contactMessages'),{name,email,message:msg,createdAt:serverTimestamp()});
+    showNotif('✅','Message Sent!','Thank you! We\'ll be in touch within 48 hours.');
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+// ==================== NEWSLETTER ====================
+window.subscribeNewsletter = async function(emailInput){
+  const email=emailInput?.value?.trim()||document.querySelector('footer input[type="email"]')?.value?.trim();
+  if(!email||!email.includes('@')){showNotif('⚠','Invalid Email','Please enter a valid email address.');return;}
+  try{
+    await addDoc(collection(db,'newsletter'),{email,subscribedAt:serverTimestamp()});
+    showNotif('✅','Subscribed!','Welcome to the RCCG Global Drama newsletter!');
+    if(emailInput)emailInput.value='';
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+// ==================== ADMIN LOGIN / LOGOUT ====================
+window.adminLogin = async function(){
+  const email=document.getElementById('admin-email')?.value?.trim();
+  const pass=document.getElementById('admin-password')?.value;
+  if(!email||!pass){showNotif('⚠','Missing Fields','Please enter email and password.');return;}
+  const btn=document.querySelector('#page-admin-login .btn-gold');
+  if(btn){btn.textContent='Signing in...';btn.disabled=true;}
+  try{
+    await signInWithEmailAndPassword(auth,email,pass);
+    await addDoc(collection(db,'activityLog'),{icon:'🔐',cls:'blue',text:`Admin signed in: ${email}.`,timestamp:serverTimestamp()});
+    showPage('admin');
+    showNotif('✅','Welcome Back!','Signed in successfully.');
+  }catch(e){
+    showNotif('⚠','Login Failed',e.code==='auth/invalid-credential'?'Incorrect email or password.':e.message);
+  }finally{if(btn){btn.textContent='🔐 Sign In to Dashboard';btn.disabled=false;}}
+};
+
+window.adminLogout = async function(){
+  if(currentUser){
+    try{
+      await addDoc(collection(db,'activityLog'),{icon:'👋',cls:'gold',text:'Admin signed out.',timestamp:serverTimestamp()});
+    }catch(e){}
+    await signOut(auth);
+  }
+  showPage('home');
+  showNotif('👋','Signed Out','You have been securely signed out.');
+};
+
+// ==================== ADMIN DASHBOARD ====================
+window.loadAdminDashboard = async function(){
+  try{
+    const [members,apps,events,blog,gallery]=await Promise.all([
+      getDocs(collection(db,'members')),
+      getDocs(query(collection(db,'applications'),where('status','==','Pending'))),
+      getDocs(collection(db,'events')),
+      getDocs(collection(db,'blog')),
+      getDocs(collection(db,'gallery')),
+    ]);
+    const map={'stat-members':members.size,'stat-pending':apps.size,'stat-events':events.size,'stat-blog':blog.size,'stat-gallery':gallery.size};
+    Object.entries(map).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val;});
+    loadActivityLog();
+  }catch(e){console.log('Dashboard:',e);}
+};
+
+async function loadActivityLog(){
+  try{
+    const snap=await getDocs(query(collection(db,'activityLog'),orderBy('timestamp','desc')));
+    const logs=[];snap.forEach(d=>logs.push(d.data()));
+    ['activity-recent','activity-full'].forEach(id=>{
+      const el=document.getElementById(id);if(!el)return;
+      const slice=id.includes('recent')?logs.slice(0,6):logs;
+      el.innerHTML=slice.map(l=>`<div class="log-item"><div class="log-icon ${l.cls||'blue'}">${l.icon||'📢'}</div><div class="log-text">${l.text||''}</div><div class="log-time">${l.timestamp?.toDate?timeAgo(l.timestamp.toDate()):'Just now'}</div></div>`).join('')||'<div style="color:var(--muted);text-align:center;padding:20px">No activity yet.</div>';
+    });
+  }catch(e){}
+}
+
+window.loadAdminMembersTable = async function(){
+  const at=document.getElementById('admin-members-table');if(!at)return;
+  at.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Loading...</td></tr>';
+  try{
+    const snap=await getDocs(query(collection(db,'members'),orderBy('name')));
+    const rows=[];snap.forEach(d=>rows.push({id:d.id,...d.data()}));
+    at.innerHTML=rows.map(m=>`<tr>
+      <td><div style="display:flex;align-items:center;gap:8px">${m.online?'<span class="online-dot"></span>':''}<strong>${m.name}</strong></div></td>
+      <td>${m.dept||'—'}</td><td>${m.location||'Nigeria'}</td>
+      <td><span class="badge ${m.online?'badge-green':'badge-gold'}">${m.online?'Active':'Away'}</span></td>
+      <td>${m.createdAt?.toDate?m.createdAt.toDate().toLocaleDateString():'—'}</td>
+      <td class="table-actions">
+        <button class="action-btn" onclick="showNotif('✏','Edit','Edit form for ${m.name.replace(/'/g,"\\'")}')">Edit</button>
+        <button class="action-btn danger" onclick="window.deleteMember('${m.id}','${m.name.replace(/'/g,"\\'")}')">Remove</button>
+      </td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No members yet.</td></tr>';
+  }catch(e){at.innerHTML=`<tr><td colspan="6" style="color:var(--muted);padding:20px">${e.message}</td></tr>`;}
+};
+
+window.deleteMember = async function(id,name){
+  if(!confirm(`Remove ${name} from the ministry?`))return;
+  try{
+    await deleteDoc(doc(db,'members',id));
+    await addDoc(collection(db,'activityLog'),{icon:'🗑',cls:'red',text:`Member removed: ${name}.`,timestamp:serverTimestamp()});
+    showNotif('✅','Removed',`${name} has been removed.`);
+    window.loadAdminMembersTable();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.loadApplicationsTable = async function(){
+  const el=document.getElementById('admin-apps-table');if(!el)return;
+  el.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Loading...</td></tr>';
+  try{
+    const snap=await getDocs(query(collection(db,'applications'),orderBy('createdAt','desc')));
+    const apps=[];snap.forEach(d=>apps.push({id:d.id,...d.data()}));
+    const sc={'Pending':'badge-gold','Under Review':'badge-blue','Approved':'badge-green','Declined':'badge-red'};
+    el.innerHTML=apps.map(a=>`<tr>
+      <td><strong>${a.name}</strong></td><td>${a.dept}</td><td>${a.parish||'—'}</td>
+      <td>${a.createdAt?.toDate?a.createdAt.toDate().toLocaleDateString():'—'}</td>
+      <td><span class="badge ${sc[a.status]||'badge-gold'}">${a.status}</span></td>
+      <td class="table-actions">
+        <button class="action-btn" onclick="window.updateApplication('${a.id}','${a.name.replace(/'/g,"\\'")}','Approved')">Approve</button>
+        <button class="action-btn danger" onclick="window.updateApplication('${a.id}','${a.name.replace(/'/g,"\\'")}','Declined')">Decline</button>
+      </td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No applications yet.</td></tr>';
+  }catch(e){el.innerHTML=`<tr><td colspan="6" style="color:var(--muted);padding:20px">${e.message}</td></tr>`;}
+};
+
+window.updateApplication = async function(id,name,status){
+  try{
+    await updateDoc(doc(db,'applications',id),{status,updatedAt:serverTimestamp()});
+    await addDoc(collection(db,'activityLog'),{icon:status==='Approved'?'✅':'❌',cls:status==='Approved'?'green':'red',text:`Application ${status.toLowerCase()}: ${name}.`,timestamp:serverTimestamp()});
+    if(status==='Approved'){
+      const snap=await getDoc(doc(db,'applications',id));
+      const data=snap.data();
+      await addDoc(collection(db,'members'),{name:data.name,dept:data.dept,role:'Member',initials:data.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(),color:'#C0392B',online:false,isLeader:false,isAdmin:false,email:data.email,profileUrl:data.profileUrl||'',createdAt:serverTimestamp()});
+    }
+    showNotif(status==='Approved'?'✅':'❌',`Application ${status}`,`${name}'s application has been ${status.toLowerCase()}.`);
+    window.loadApplicationsTable();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.publishAnnouncement = async function(){
+  const title=document.querySelector('#view-announcements input')?.value?.trim();
+  const msg=document.querySelector('#view-announcements textarea')?.value?.trim();
+  const audience=document.querySelector('#view-announcements select')?.value;
+  if(!title||!msg){showNotif('⚠','Missing Fields','Please fill in title and message.');return;}
+  try{
+    await addDoc(collection(db,'announcements'),{title,message:msg,audience,publishedBy:currentUser?.email,createdAt:serverTimestamp()});
+    await addDoc(collection(db,'activityLog'),{icon:'📢',cls:'blue',text:`Announcement published: "${title}".`,timestamp:serverTimestamp()});
+    showNotif('📢','Published!',`"${title}" has been sent to ${audience}.`);
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.publishBlogPost = async function(){
+  const title=document.getElementById('blog-post-title')?.value?.trim();
+  const tag=document.getElementById('blog-post-tag')?.value;
+  const author=document.getElementById('blog-post-author')?.value?.trim();
+  const content=document.getElementById('blog-post-content')?.value?.trim();
+  if(!title||!content){showNotif('⚠','Missing Fields','Title and content are required.');return;}
+  try{
+    await addDoc(collection(db,'blog'),{title,tag,author,content,excerpt:content.substring(0,150)+'...',createdAt:serverTimestamp()});
+    await addDoc(collection(db,'activityLog'),{icon:'📝',cls:'gold',text:`Blog post published: "${title}".`,timestamp:serverTimestamp()});
+    showNotif('✅','Published!',`"${title}" is now live.`);
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.publishEvent = async function(){
+  const title=document.getElementById('event-title')?.value?.trim();
+  const date=document.getElementById('event-date')?.value;
+  const loc=document.getElementById('event-loc')?.value?.trim();
+  const time=document.getElementById('event-time')?.value?.trim();
+  const cat=document.getElementById('event-cat')?.value;
+  const desc=document.getElementById('event-desc')?.value?.trim();
+  if(!title||!date){showNotif('⚠','Missing Fields','Title and date are required.');return;}
+  const d=new Date(date);
+  try{
+    await addDoc(collection(db,'events'),{title,date,loc,time,cat,desc,day:String(d.getDate()),month:d.toLocaleString('en',{month:'short'}),year:d.getFullYear(),ticket:'Registration Required',createdAt:serverTimestamp()});
+    await addDoc(collection(db,'activityLog'),{icon:'📅',cls:'blue',text:`Event created: "${title}".`,timestamp:serverTimestamp()});
+    showNotif('✅','Event Added!',`"${title}" has been added to the calendar.`);
+    window.loadEvents();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.handleGalleryUpload = async function(){
+  const input=document.getElementById('gallery-upload-input');
+  if(!input?.files[0]){showNotif('⚠','No File','Please select an image or video.');return;}
+  const title=document.getElementById('gallery-upload-title')?.value||'Untitled';
+  const cat=document.getElementById('gallery-upload-cat')?.value||'Conference';
+  const file=input.files[0];
+  const isVideo=file.type.startsWith('video/');
+  showNotif('⏳','Uploading...','Uploading media to Cloudinary...');
+  try{
+    const url=await window.uploadToCloudinary(file,isVideo?'videos':'gallery');
+    await addDoc(collection(db,isVideo?'videos':'gallery'),{title,cat,[isVideo?'videoUrl':'imageUrl']:url,emoji:isVideo?'▶':'🎭',uploadedBy:currentUser?.email||'Admin',createdAt:serverTimestamp()});
+    await addDoc(collection(db,'activityLog'),{icon:'🖼',cls:'gold',text:`Gallery updated: "${title}" added.`,timestamp:serverTimestamp()});
+    showNotif('✅','Uploaded!',`"${title}" added to the ${isVideo?'videos':'gallery'}.`);
+    input.value='';
+    window.loadGallery('All',isVideo?'videos':'photos');
+  }catch(e){showNotif('⚠','Upload Failed',e.message);}
+};
+
+// ==================== ADMIN MANAGEMENT ====================
+window.createAdmin = async function(){
+  const name = document.getElementById('new-admin-name')?.value?.trim();
+  const email = document.getElementById('new-admin-email')?.value?.trim();
+  const role = document.getElementById('new-admin-role')?.value;
+  const pass = document.getElementById('new-admin-pass')?.value;
+  if(!name||!email||!pass){showNotif('⚠','Missing Fields','Please fill in name, email, and password.');return;}
+  if(pass.length < 8){showNotif('⚠','Weak Password','Password must be at least 8 characters.');return;}
+  const btn = document.querySelector('#view-admins .btn-gold');
+  if(btn){btn.textContent='Creating...';btn.disabled=true;}
+  try{
+    // Use a secondary Firebase app instance so current admin stays logged in
+    const { initializeApp: initApp, deleteApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getAuth: getAuth2, createUserWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const secondaryApp = initApp(firebaseConfig, 'secondary-' + Date.now());
+    const secondaryAuth = getAuth2(secondaryApp);
+    const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+    const uid = userCred.user.uid;
+    await secondaryAuth.signOut();
+    await deleteApp(secondaryApp);
+    // Save role & profile to Firestore admins collection
+    await setDoc(doc(db,'admins',uid),{
+      name, email, role,
+      verified: true,
+      online: false,
+      suspended: false,
+      createdBy: currentUser?.email || 'System',
+      createdAt: serverTimestamp(),
+      lastActive: serverTimestamp()
+    });
+    await addDoc(collection(db,'activityLog'),{
+      icon:'🛡', cls:'blue',
+      text:`New admin created: ${name} (${role}) by ${currentUser?.email||'System'}.`,
+      timestamp: serverTimestamp()
+    });
+    // Clear form
+    document.getElementById('new-admin-name').value='';
+    document.getElementById('new-admin-email').value='';
+    document.getElementById('new-admin-pass').value='';
+    showNotif('✅','Admin Created!',`${name} has been added as ${role}. They can now sign in with their email and password.`);
+    window.loadAdminsTable();
+  }catch(e){
+    const msg = e.code==='auth/email-already-in-use' ? 'That email is already registered.' : e.message;
+    showNotif('⚠','Error', msg);
+  }finally{
+    if(btn){btn.textContent='🛡 Create Admin Account';btn.disabled=false;}
+  }
+};
+
+window.loadAdminsTable = async function(){
+  const tb = document.getElementById('admins-table');
+  if(!tb)return;
+  tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Loading...</td></tr>';
+  try{
+    const snap = await getDocs(query(collection(db,'admins'), orderBy('createdAt','desc')));
+    const admins = [];
+    snap.forEach(d => admins.push({id:d.id,...d.data()}));
+    if(admins.length===0){
+      tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No admins in Firestore yet. Create your first admin above.</td></tr>';
+      return;
+    }
+    const roleColors = {
+      'Super Admin':'badge-gold',
+      'National Admin':'badge-blue',
+      'Regional Admin':'style="background:rgba(168,85,247,0.1);color:#C084FC;border:1px solid rgba(168,85,247,0.2)"',
+      'Content Manager':'style="background:rgba(20,184,166,0.1);color:#2DD4BF;border:1px solid rgba(20,184,166,0.2)"',
+      'Moderator':'style="background:rgba(100,100,100,0.1);color:#aaa;border:1px solid rgba(100,100,100,0.2)"',
+    };
+    tb.innerHTML = admins.map(a => {
+      const rc = roleColors[a.role]||'badge-gold';
+      const badgeClass = rc.startsWith('badge') ? `class="badge ${rc}"` : `class="badge" ${rc}`;
+      const isSelf = a.email === currentUser?.email;
+      return `<tr>
+        <td><div style="display:flex;align-items:center;gap:8px">${a.online?'<span class="online-dot"></span>':''}<strong>${a.name}</strong>${isSelf?'<span style="font-size:11px;color:var(--muted)">(you)</span>':''}</div></td>
+        <td><span ${badgeClass}>${a.role}</span></td>
+        <td style="font-size:13px;color:var(--muted)">${a.email||'—'}</td>
+        <td><span class="badge ${a.suspended?'badge-red':a.online?'badge-green':'badge-gold'}">${a.suspended?'Suspended':a.online?'Online':'Away'}</span></td>
+        <td>${a.verified?'<span class="badge badge-blue">✓ Verified</span>':'<span class="badge badge-red">✗ Unverified</span>'}</td>
+        <td class="table-actions">
+          ${!isSelf?`
+            ${a.suspended
+              ? `<button class="action-btn" onclick="window.toggleAdminSuspend('${a.id}','${a.name.replace(/'/g,"\\'")}',false)">Restore</button>`
+              : `<button class="action-btn danger" onclick="window.toggleAdminSuspend('${a.id}','${a.name.replace(/'/g,"\\'")}',true)">Suspend</button>`
+            }
+            <button class="action-btn danger" onclick="window.removeAdmin('${a.id}','${a.name.replace(/'/g,"\\'")}')">Remove</button>
+          `:'<span style="font-size:12px;color:var(--muted)">—</span>'}
+        </td>
+      </tr>`;
+    }).join('');
+  }catch(e){
+    tb.innerHTML=`<tr><td colspan="6" style="color:var(--muted);padding:20px">${e.message}</td></tr>`;
+  }
+};
+
+window.toggleAdminSuspend = async function(id, name, suspend){
+  if(!confirm(`${suspend?'Suspend':'Restore'} admin access for ${name}?`))return;
+  try{
+    await updateDoc(doc(db,'admins',id),{suspended:suspend, updatedAt:serverTimestamp()});
+    await addDoc(collection(db,'activityLog'),{
+      icon: suspend?'🚫':'✅', cls: suspend?'red':'green',
+      text:`Admin ${suspend?'suspended':'restored'}: ${name}.`,
+      timestamp: serverTimestamp()
+    });
+    showNotif(suspend?'🚫':'✅', suspend?'Admin Suspended':`${name} Restored`, `${name}'s admin access has been ${suspend?'suspended':'restored'}.`);
+    window.loadAdminsTable();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.removeAdmin = async function(id, name){
+  if(!confirm(`Permanently remove ${name} as administrator? This cannot be undone.`))return;
+  try{
+    await deleteDoc(doc(db,'admins',id));
+    await addDoc(collection(db,'activityLog'),{
+      icon:'🗑', cls:'red',
+      text:`Admin removed: ${name}.`,
+      timestamp: serverTimestamp()
+    });
+    showNotif('✅','Admin Removed',`${name} has been removed from the admin registry.`);
+    window.loadAdminsTable();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+
+  const headline=document.getElementById('settings-headline')?.value;
+  const subtext=document.getElementById('settings-subtext')?.value;
+  try{
+    await setDoc(doc(db,'settings','homepage'),{headline,subtext,updatedAt:serverTimestamp()});
+    showNotif('✅','Settings Saved','Homepage content updated.');
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+// ==================== ADMIN VIEW ROUTING ====================
+window.showAdminView = function(view,btn){
+  document.querySelectorAll('.admin-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  const el=document.getElementById('view-'+view);
+  if(el)el.classList.add('active');
+  if(btn?.classList)btn.classList.add('active');
+  else document.querySelectorAll('.sidebar-link').forEach(l=>{if(l.getAttribute('onclick')?.includes(`'${view}'`))l.classList.add('active');});
+  if(view==='dashboard')window.loadAdminDashboard();
+  if(view==='members')window.loadAdminMembersTable();
+  if(view==='admins')window.loadAdminsTable();
+  if(view==='applications')window.loadApplicationsTable();
+  if(view==='activity')loadActivityLog();
+  if(view==='analytics')renderAnalytics();
+  if(view==='gallery-admin')renderAdminGalleryPanel();
+  if(view==='blog-admin')renderAdminBlogPanel();
+  if(view==='events-admin')renderAdminEventsPanel();
+};
+
+function renderAdminGalleryPanel(){
+  const el=document.getElementById('gallery-admin-panel');if(!el)return;
+  el.innerHTML=`<div class="admin-panel"><div class="admin-panel-title">☁ Upload Media via Cloudinary</div>
+    <div class="form-group"><label class="form-label">Media Title</label><input class="form-input" type="text" id="gallery-upload-title" placeholder="e.g. Easter 2025 Production"/></div>
+    <div class="form-group"><label class="form-label">Category</label><select class="form-select" id="gallery-upload-cat"><option>Easter</option><option>Christmas</option><option>Evangelism</option><option>Conference</option><option>Youth</option><option>Training</option></select></div>
+    <div class="form-group"><label class="form-label">Select Image or Video</label><input class="form-input" type="file" id="gallery-upload-input" accept="image/*,video/*" style="padding:10px"/></div>
+    <button class="btn btn-gold" onclick="window.handleGalleryUpload()">Upload to Cloudinary ☁</button></div>`;
+}
+
+function renderAdminBlogPanel(){
+  const el=document.getElementById('blog-admin-panel');if(!el)return;
+  el.innerHTML=`<div class="admin-panel"><div class="admin-panel-title">📝 Publish New Post (Firestore)</div>
+    <div class="form-group"><label class="form-label">Title</label><input class="form-input" type="text" id="blog-post-title" placeholder="Post title"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tag</label><select class="form-select" id="blog-post-tag"><option>News</option><option>Devotional</option><option>Testimony</option><option>Script</option></select></div>
+      <div class="form-group"><label class="form-label">Author</label><input class="form-input" type="text" id="blog-post-author" placeholder="Your name"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Content</label><textarea class="form-textarea" id="blog-post-content" placeholder="Write your post..." style="min-height:200px"></textarea></div>
+    <button class="btn btn-gold" onclick="window.publishBlogPost()">Publish to Firestore</button></div>`;
+}
+
+function renderAdminEventsPanel(){
+  const el=document.getElementById('events-admin-panel');if(!el)return;
+  el.innerHTML=`<div class="admin-panel"><div class="admin-panel-title">📅 Add New Event (Firestore)</div>
+    <div class="form-group"><label class="form-label">Event Title</label><input class="form-input" type="text" id="event-title" placeholder="Event name"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="event-date"/></div>
+      <div class="form-group"><label class="form-label">Category</label><select class="form-select" id="event-cat"><option>Conference</option><option>Production</option><option>Outreach</option><option>Training</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Location</label><input class="form-input" type="text" id="event-loc" placeholder="Venue, City"/></div>
+      <div class="form-group"><label class="form-label">Time</label><input class="form-input" type="text" id="event-time" placeholder="e.g. 9:00 AM – 6:00 PM"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="event-desc" placeholder="Event details..."></textarea></div>
+    <button class="btn btn-gold" onclick="window.publishEvent()">Add Event to Firestore</button></div>`;
+}
+
+function renderAnalytics(){
+  const el=document.getElementById('country-bars');if(!el)return;
+  const countries=[{c:'🇳🇬 Nigeria',pct:42},{c:'🇬🇧 United Kingdom',pct:18},{c:'🇺🇸 United States',pct:14},{c:'🇬🇭 Ghana',pct:8},{c:'🇿🇦 South Africa',pct:5},{c:'🇨🇦 Canada',pct:4},{c:'🇩🇪 Germany',pct:3},{c:'🇫🇷 France',pct:2},{c:'🇧🇪 Belgium',pct:2},{c:'🌍 Other',pct:2}];
+  el.innerHTML=countries.map(r=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px;color:var(--off-white);margin-bottom:4px"><span>${r.c}</span><span style="color:var(--gold);font-weight:700">${r.pct}%</span></div><div style="height:6px;background:var(--dark3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${r.pct}%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:3px"></div></div></div>`).join('');
+}
+
+// ==================== PAGE NAVIGATION ====================
+window.showPage = function(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  const p=document.getElementById('page-'+page);
+  if(p){p.classList.add('active');window.scrollTo(0,0);}
+  const n=document.getElementById('nav-'+page);if(n)n.classList.add('active');
+  const footer=document.getElementById('main-footer');
+  if(footer)footer.style.display=(page==='admin')?'none':'block';
+  if(page==='admin'&&!currentUser){window.showPage('admin-login');return;}
+  if(page==='team')window.loadMembers();
+  if(page==='gallery')window.loadGallery();
+  if(page==='blog')window.loadBlog();
+  if(page==='events')window.loadEvents();
+  if(page==='admin'){window.loadAdminDashboard();renderAdminGalleryPanel();renderAdminBlogPanel();renderAdminEventsPanel();}
+  initFadeUps();
+};
+window.showAdminLogin=function(){window.showPage('admin-login');};
+
+// ==================== HOME COUNTDOWNS ====================
+['event1','event2'].forEach((id,i)=>{
+  const dates=['2025-07-14','2025-08-22'];
+  function tick(){
+    const el=document.getElementById(`${id}-countdown`);if(!el)return;
+    const diff=Math.max(0,new Date(dates[i])-new Date());
+    const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
+    const m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    el.innerHTML=`<div class="countdown-unit"><div class="countdown-num">${d}</div><div class="countdown-label">Days</div></div><div class="countdown-unit"><div class="countdown-num">${h}</div><div class="countdown-label">Hours</div></div><div class="countdown-unit"><div class="countdown-num">${m}</div><div class="countdown-label">Mins</div></div><div class="countdown-unit"><div class="countdown-num">${s}</div><div class="countdown-label">Secs</div></div>`;
+  }
+  tick();setInterval(tick,1000);
+});
+
+// ==================== UTILITIES ====================
+window.toggleTheme=function(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('theme-toggle').textContent=d?'☽':'☀';};
+window.toggleMobile=function(){document.getElementById('mobile-menu').classList.toggle('open');};
+let notifTimer=null;
+window.showNotif=function(icon,title,msg){const el=document.getElementById('notification');document.getElementById('notif-icon').textContent=icon;document.getElementById('notif-title').textContent=title;document.getElementById('notif-msg').textContent=msg;el.classList.add('show');if(notifTimer)clearTimeout(notifTimer);notifTimer=setTimeout(()=>el.classList.remove('show'),4500);};
+window.hideNotif=function(){document.getElementById('notification').classList.remove('show');};
+window.closeModal=function(e){if(e.target===document.getElementById('modal-overlay'))window.closeModalDirect();};
+window.closeModalDirect=function(){document.getElementById('modal-overlay').classList.add('hidden');};
+window.openPublishModal=function(){document.getElementById('modal-content').innerHTML=`<div class="modal-title">📢 Publish Announcement</div><div class="modal-subtitle">This will notify all ministry members.</div><div class="form-group"><label class="form-label">Title</label><input class="form-input" type="text" id="ann-title" placeholder="Announcement title"/></div><div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" id="ann-msg" placeholder="Your message..."></textarea></div><button class="btn btn-gold w-full" style="justify-content:center" onclick="window.publishAnnouncementModal()">Publish Now</button>`;document.getElementById('modal-overlay').classList.remove('hidden');};
+window.publishAnnouncementModal=async function(){const t=document.getElementById('ann-title')?.value?.trim();const m=document.getElementById('ann-msg')?.value?.trim();if(!t||!m)return;try{await addDoc(collection(db,'announcements'),{title:t,message:m,createdAt:serverTimestamp()});closeModalDirect();showNotif('📢','Published!','Announcement sent.');}catch(e){showNotif('⚠','Error',e.message);}};
+
+function initFadeUps(){document.querySelectorAll('.fade-up:not(.visible)').forEach(el=>{if(el.getBoundingClientRect().top<window.innerHeight-80)el.classList.add('visible');});}
+window.addEventListener('scroll',()=>{const nav=document.getElementById('nav');if(nav)nav.classList.toggle('scrolled',window.scrollY>50);initFadeUps();});
+setTimeout(initFadeUps,100);
+
+// ==================== INIT ====================
+window.loadBlog();
+window.loadGallery();
+window.loadEvents();
+setTimeout(initFadeUps,200);
+
+// ==================== OLD DATA BLOCK (KEPT FOR STATIC REFERENCE) ====================
 const teamMembers = [
   {name:"Rev. Adebayo Oluwaseun",role:"Director of Drama",dept:"Leadership",initials:"AO",color:"#C0392B",isAdmin:true,online:true,isLeader:true},
   {name:"Deacon James Chukwu",role:"Deputy Director",dept:"Leadership",initials:"JC",color:"#922B21",isAdmin:true,online:false,lastSeen:"2 hours ago",isLeader:true},
