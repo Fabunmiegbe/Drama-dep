@@ -1509,9 +1509,9 @@ footer{
                 <button class="btn btn-gold w-full" style="justify-content:center" onclick="showAdminView('applications',document.querySelector('.sidebar-link:nth-child(3))'))">Review Applications (18)</button>
                 <button class="btn btn-outline w-full" style="justify-content:center" onclick="openPublishModal()">📢 Publish Announcement</button>
                 <button class="btn btn-outline w-full" style="justify-content:center" onclick="showNotif('📅','Events','Navigate to Events to add new event.')">📅 Add New Event</button>
-                <button class="btn btn-outline w-full" style="justify-content:center" onclick="showNotif('🖼','Gallery','Navigate to Gallery to upload media.')">🖼 Upload Media</button>
-                <button class="btn btn-outline w-full" style="justify-content:center" onclick="showNotif('✉','Email','Email notification system ready.')">✉ Send Newsletter</button>
-                <button class="btn btn-outline w-full" style="justify-content:center;border-color:var(--red);color:var(--red-light)" onclick="showNotif('⚙','Settings','Navigate to Settings to manage homepage content.')">⚙ Edit Homepage</button>
+                <button class="btn btn-outline w-full" style="justify-content:center" onclick="window.showAdminView('gallery-admin', document.querySelector('[onclick*=gallery-admin]'))">🖼 Upload Media</button>
+                <button class="btn btn-outline w-full" style="justify-content:center" onclick="window.checkNewsletterSubs()">✉ View Newsletter Subscribers</button>
+                <button class="btn btn-outline w-full" style="justify-content:center;border-color:var(--red);color:var(--red-light)" onclick="window.showAdminView('settings', document.querySelector('[onclick*=settings]'))">⚙ Edit Homepage</button>
               </div>
             </div>
           </div>
@@ -1521,7 +1521,7 @@ footer{
         <div class="admin-view" id="view-members">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
             <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;font-weight:700">Member Management</h2>
-            <button class="btn btn-gold btn-sm" onclick="showNotif('✅','Member Added','Add member form would open here.')">+ Add Member</button>
+            <button class="btn btn-gold btn-sm" onclick="window.openAddMemberModal()">+ Add Member</button>
           </div>
           <div class="admin-panel">
             <table class="data-table">
@@ -2170,13 +2170,14 @@ window.loadAdminMembersTable = async function(){
   try{
     const snap=await getDocs(query(collection(db,'members'),orderBy('name')));
     const rows=[];snap.forEach(d=>rows.push({id:d.id,...d.data()}));
+    window._membersCache = rows;
     at.innerHTML=rows.map(m=>`<tr>
       <td><div style="display:flex;align-items:center;gap:8px">${m.online?'<span class="online-dot"></span>':''}<strong>${m.name}</strong></div></td>
       <td>${m.dept||'—'}</td><td>${m.location||'Nigeria'}</td>
       <td><span class="badge ${m.online?'badge-green':'badge-gold'}">${m.online?'Active':'Away'}</span></td>
       <td>${m.createdAt?.toDate?m.createdAt.toDate().toLocaleDateString():'—'}</td>
       <td class="table-actions">
-        <button class="action-btn" onclick="showNotif('✏','Edit','Edit form for ${m.name.replace(/'/g,"\\'")}')">Edit</button>
+        <button class="action-btn" onclick="window.openEditMemberModal('${m.id}')">Edit</button>
         <button class="action-btn danger" onclick="window.deleteMember('${m.id}','${m.name.replace(/'/g,"\\'")}')">Remove</button>
       </td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No members yet.</td></tr>';
   }catch(e){at.innerHTML=`<tr><td colspan="6" style="color:var(--muted);padding:20px">${e.message}</td></tr>`;}
@@ -2188,6 +2189,113 @@ window.deleteMember = async function(id,name){
     await deleteDoc(doc(db,'members',id));
     await addDoc(collection(db,'activityLog'),{icon:'🗑',cls:'red',text:`Member removed: ${name}.`,timestamp:serverTimestamp()});
     showNotif('✅','Removed',`${name} has been removed.`);
+    window.loadAdminMembersTable();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+// ==================== ADD / EDIT MEMBER MODAL ====================
+window.openAddMemberModal = function(){
+  document.getElementById('modal-content').innerHTML=`
+    <div class="modal-title">➕ Add New Member</div>
+    <div class="modal-subtitle">This will save directly to Firestore.</div>
+    <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" id="mm-name" placeholder="e.g. Tobi Fashola"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Role / Title</label><input class="form-input" type="text" id="mm-role" placeholder="e.g. Stage Manager"/></div>
+      <div class="form-group">
+        <label class="form-label">Department</label>
+        <select class="form-select" id="mm-dept">
+          <option>Acting</option><option>Direction</option><option>Music</option>
+          <option>Stage Management</option><option>Makeup</option><option>Lighting</option>
+          <option>Leadership</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Email (optional)</label><input class="form-input" type="email" id="mm-email" placeholder="member@email.com"/></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Is Leader?</label>
+        <select class="form-select" id="mm-leader"><option value="false">No — Regular Member</option><option value="true">Yes — Leadership Team</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Is Admin?</label>
+        <select class="form-select" id="mm-admin"><option value="false">No</option><option value="true">Yes — Verified Admin</option></select>
+      </div>
+    </div>
+    <button class="btn btn-gold w-full" style="justify-content:center" onclick="window.saveNewMember()">Save Member to Firestore</button>`;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+};
+
+window.saveNewMember = async function(){
+  const name=document.getElementById('mm-name')?.value?.trim();
+  const role=document.getElementById('mm-role')?.value?.trim()||'Member';
+  const dept=document.getElementById('mm-dept')?.value;
+  const email=document.getElementById('mm-email')?.value?.trim()||'';
+  const isLeader=document.getElementById('mm-leader')?.value==='true';
+  const isAdmin=document.getElementById('mm-admin')?.value==='true';
+  if(!name){showNotif('⚠','Missing Name',"Please enter the member's full name.");return;}
+  const colors=['#C0392B','#922B21','#9B7D1F','#1A5276','#1D8348','#6C3483','#17202A','#145A32'];
+  const color=colors[Math.floor(Math.random()*colors.length)];
+  try{
+    await addDoc(collection(db,'members'),{
+      name, role, dept, email, isLeader, isAdmin, online:false,
+      initials:name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(),
+      color, createdAt:serverTimestamp()
+    });
+    await addDoc(collection(db,'activityLog'),{icon:'➕',cls:'green',text:`New member added: ${name} (${dept}).`,timestamp:serverTimestamp()});
+    window.closeModalDirect();
+    showNotif('✅','Member Added!',`${name} has been added to the ministry.`);
+    window.loadAdminMembersTable();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.openEditMemberModal = function(id){
+  const m=(window._membersCache||[]).find(x=>x.id===id);
+  if(!m){showNotif('⚠','Not Found',"Could not load this member's details.");return;}
+  document.getElementById('modal-content').innerHTML=`
+    <div class="modal-title">✏ Edit Member</div>
+    <div class="modal-subtitle">Updating: ${m.name}</div>
+    <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" id="mm-name" value="${(m.name||'').replace(/"/g,'&quot;')}"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Role / Title</label><input class="form-input" type="text" id="mm-role" value="${(m.role||'').replace(/"/g,'&quot;')}"/></div>
+      <div class="form-group">
+        <label class="form-label">Department</label>
+        <select class="form-select" id="mm-dept">
+          ${['Acting','Direction','Music','Stage Management','Makeup','Lighting','Leadership'].map(d=>`<option ${m.dept===d?'selected':''}>${d}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="mm-email" value="${(m.email||'').replace(/"/g,'&quot;')}"/></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Is Leader?</label>
+        <select class="form-select" id="mm-leader"><option value="false" ${!m.isLeader?'selected':''}>No — Regular Member</option><option value="true" ${m.isLeader?'selected':''}>Yes — Leadership Team</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Is Admin?</label>
+        <select class="form-select" id="mm-admin"><option value="false" ${!m.isAdmin?'selected':''}>No</option><option value="true" ${m.isAdmin?'selected':''}>Yes — Verified Admin</option></select>
+      </div>
+    </div>
+    <button class="btn btn-gold w-full" style="justify-content:center" onclick="window.updateMember('${id}')">Save Changes to Firestore</button>`;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+};
+
+window.updateMember = async function(id){
+  const name=document.getElementById('mm-name')?.value?.trim();
+  const role=document.getElementById('mm-role')?.value?.trim();
+  const dept=document.getElementById('mm-dept')?.value;
+  const email=document.getElementById('mm-email')?.value?.trim()||'';
+  const isLeader=document.getElementById('mm-leader')?.value==='true';
+  const isAdmin=document.getElementById('mm-admin')?.value==='true';
+  if(!name){showNotif('⚠','Missing Name',"Please enter the member's full name.");return;}
+  try{
+    await updateDoc(doc(db,'members',id),{
+      name, role, dept, email, isLeader, isAdmin,
+      initials:name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(),
+      updatedAt:serverTimestamp()
+    });
+    await addDoc(collection(db,'activityLog'),{icon:'✏',cls:'gold',text:`Member updated: ${name}.`,timestamp:serverTimestamp()});
+    window.closeModalDirect();
+    showNotif('✅','Member Updated!',`${name}'s details have been saved.`);
     window.loadAdminMembersTable();
   }catch(e){showNotif('⚠','Error',e.message);}
 };
@@ -2403,6 +2511,13 @@ window.removeAdmin = async function(id, name){
     });
     showNotif('✅','Admin Removed',`${name} has been removed from the admin registry.`);
     window.loadAdminsTable();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.checkNewsletterSubs = async function(){
+  try{
+    const snap=await getDocs(collection(db,'newsletter'));
+    showNotif('✉','Newsletter Subscribers',`You have ${snap.size} subscriber(s) in Firestore. Actually sending bulk emails requires a backend email service — ask me to wire that up next if needed.`);
   }catch(e){showNotif('⚠','Error',e.message);}
 };
 
