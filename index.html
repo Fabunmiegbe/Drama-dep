@@ -2406,7 +2406,7 @@ window.removeAdmin = async function(id, name){
   }catch(e){showNotif('⚠','Error',e.message);}
 };
 
-
+window.saveSettings = async function(){
   const headline=document.getElementById('settings-headline')?.value;
   const subtext=document.getElementById('settings-subtext')?.value;
   try{
