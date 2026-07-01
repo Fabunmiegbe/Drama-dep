@@ -809,7 +809,7 @@ footer{
 <!-- NAV -->
 <nav id="nav">
   <div class="nav-inner">
-    <a href="#" class="nav-logo" onclick="showPage('home')">
+    <a href="#" class="nav-logo" onclick="window.showPage('home')">
       <div class="nav-logo-icon">RGD</div>
       <div class="nav-logo-text">
         <span class="nav-logo-title">RCCG Global Drama</span>
@@ -817,19 +817,19 @@ footer{
       </div>
     </a>
     <div class="nav-links">
-      <a href="#" onclick="showPage('home')" id="nav-home" class="active">Home</a>
-      <a href="#" onclick="showPage('about')" id="nav-about">About</a>
-      <a href="#" onclick="showPage('team')" id="nav-team">Our Team</a>
-      <a href="#" onclick="showPage('events')" id="nav-events">Events</a>
-      <a href="#" onclick="showPage('gallery')" id="nav-gallery">Gallery</a>
-      <a href="#" onclick="showPage('blog')" id="nav-blog">Blog</a>
-      <a href="#" onclick="showPage('contact')" id="nav-contact">Contact</a>
+      <a href="#" onclick="window.showPage('home')" id="nav-home" class="active">Home</a>
+      <a href="#" onclick="window.showPage('about')" id="nav-about">About</a>
+      <a href="#" onclick="window.showPage('team')" id="nav-team">Our Team</a>
+      <a href="#" onclick="window.showPage('events')" id="nav-events">Events</a>
+      <a href="#" onclick="window.showPage('gallery')" id="nav-gallery">Gallery</a>
+      <a href="#" onclick="window.showPage('blog')" id="nav-blog">Blog</a>
+      <a href="#" onclick="window.showPage('contact')" id="nav-contact">Contact</a>
     </div>
     <div class="nav-actions">
-      <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀</button>
-      <a href="#" class="btn btn-red btn-sm" onclick="showPage('join')">Join Us</a>
-      <a href="#" class="btn btn-outline btn-sm" onclick="showAdminLogin()">Admin</a>
-      <button id="hamburger" onclick="toggleMobile()" aria-label="Menu">
+      <button id="theme-toggle" onclick="window.toggleTheme()" title="Toggle theme">☀</button>
+      <a href="#" class="btn btn-red btn-sm" onclick="window.showPage('join')">Join Us</a>
+      <a href="#" class="btn btn-outline btn-sm" onclick="window.showAdminLogin()">Admin</a>
+      <button id="hamburger" onclick="window.toggleMobile()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -838,14 +838,14 @@ footer{
 
 <!-- MOBILE MENU -->
 <div id="mobile-menu">
-  <a href="#" onclick="showPage('home');toggleMobile()">Home</a>
-  <a href="#" onclick="showPage('about');toggleMobile()">About</a>
-  <a href="#" onclick="showPage('team');toggleMobile()">Our Team</a>
-  <a href="#" onclick="showPage('events');toggleMobile()">Events</a>
-  <a href="#" onclick="showPage('gallery');toggleMobile()">Gallery</a>
-  <a href="#" onclick="showPage('blog');toggleMobile()">Blog</a>
-  <a href="#" onclick="showPage('contact');toggleMobile()">Contact</a>
-  <a href="#" onclick="showPage('join');toggleMobile()" style="color:var(--red-light)">Join the Ministry</a>
+  <a href="#" onclick="window.showPage('home');window.toggleMobile()">Home</a>
+  <a href="#" onclick="window.showPage('about');window.toggleMobile()">About</a>
+  <a href="#" onclick="window.showPage('team');window.toggleMobile()">Our Team</a>
+  <a href="#" onclick="window.showPage('events');window.toggleMobile()">Events</a>
+  <a href="#" onclick="window.showPage('gallery');window.toggleMobile()">Gallery</a>
+  <a href="#" onclick="window.showPage('blog');window.toggleMobile()">Blog</a>
+  <a href="#" onclick="window.showPage('contact');window.toggleMobile()">Contact</a>
+  <a href="#" onclick="window.showPage('join');window.toggleMobile()" style="color:var(--red-light)">Join the Ministry</a>
 </div>
 
 <!-- NOTIFICATION -->
@@ -855,13 +855,13 @@ footer{
     <div class="notification-title" id="notif-title">Success</div>
     <div class="notification-msg" id="notif-msg">Action completed successfully.</div>
   </div>
-  <button class="notification-close" onclick="hideNotif()">✕</button>
+  <button class="notification-close" onclick="window.hideNotif()">✕</button>
 </div>
 
 <!-- MODAL -->
-<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal-overlay hidden" id="modal-overlay" onclick="window.closeModal(event)">
   <div class="modal" id="modal">
-    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <button class="modal-close" onclick="window.closeModalDirect()">✕</button>
     <div id="modal-content"></div>
   </div>
 </div>
@@ -884,9 +884,9 @@ footer{
       <p class="hero-subtitle">Transforming Lives Through the Power of Drama</p>
       <p class="hero-desc">An anointed drama ministry delivering God's word through the art of performance — touching hearts, redeeming souls, and glorifying the King of Kings across nations.</p>
       <div class="hero-actions">
-        <a href="#" class="btn btn-gold btn-lg" onclick="showPage('join')">✝ Join the Ministry</a>
-        <a href="#" class="btn btn-outline btn-lg" onclick="showPage('events')">View Upcoming Events</a>
-        <button class="video-play-btn" onclick="showNotif('🎬','Watch Our Story','Coming soon — check back for our full ministry documentary.')">
+        <a href="#" class="btn btn-gold btn-lg" onclick="window.showPage('join')">✝ Join the Ministry</a>
+        <a href="#" class="btn btn-outline btn-lg" onclick="window.showPage('events')">View Upcoming Events</a>
+        <button class="video-play-btn" onclick="window.showNotif('🎬','Watch Our Story','Coming soon — check back for our full ministry documentary.')">
           <div class="play-circle">▶</div>
           <span class="play-label">Watch Our Story</span>
         </button>
@@ -920,7 +920,7 @@ footer{
             <div class="card-title">The Passion: Redemption's Price</div>
             <div class="card-meta"><span>📅 April 2024</span><span>🎭 Full Production</span></div>
             <p class="card-desc">A breathtaking portrayal of Christ's sacrifice — from Gethsemane to Golgotha — that left thousands weeping and surrendering to the Lord.</p>
-            <a href="#" class="btn btn-outline btn-sm" onclick="showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
+            <a href="#" class="btn btn-outline btn-sm" onclick="window.showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
           </div>
         </div>
         <div class="card perf-card fade-up">
@@ -929,7 +929,7 @@ footer{
             <div class="card-title">Emmanuel: God Among Us</div>
             <div class="card-meta"><span>📅 December 2023</span><span>🎭 Musical Drama</span></div>
             <p class="card-desc">A magnificent musical drama celebrating the birth of Christ — featuring a cast of 80 performers, original compositions, and stunning stagecraft.</p>
-            <a href="#" class="btn btn-outline btn-sm" onclick="showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
+            <a href="#" class="btn btn-outline btn-sm" onclick="window.showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
           </div>
         </div>
         <div class="card perf-card fade-up">
@@ -938,7 +938,7 @@ footer{
             <div class="card-title">Prodigal: The Road Home</div>
             <div class="card-meta"><span>📅 March 2024</span><span>🎭 Outdoor Outreach</span></div>
             <p class="card-desc">An open-air evangelism production that reached deep into communities — over 3,000 people responded to the altar call during the run.</p>
-            <a href="#" class="btn btn-outline btn-sm" onclick="showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
+            <a href="#" class="btn btn-outline btn-sm" onclick="window.showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
           </div>
         </div>
       </div>
@@ -974,7 +974,7 @@ footer{
             <p class="event-desc">Annual gathering of drama ministers across all RCCG zones for training, performances, and impartation from the General Overseer.</p>
             <div class="countdown" id="event1-countdown"></div>
           </div>
-          <a href="#" class="btn btn-red btn-sm" style="flex-shrink:0;align-self:center" onclick="showPage('events')">RSVP Now</a>
+          <a href="#" class="btn btn-red btn-sm" style="flex-shrink:0;align-self:center" onclick="window.showPage('events')">RSVP Now</a>
         </div>
         <div class="event-card fade-up">
           <div class="event-date-block"><div class="event-day">22</div><div class="event-month">Aug</div></div>
@@ -984,11 +984,11 @@ footer{
             <p class="event-desc">A 5-city evangelism drama tour across West Africa, taking the gospel to streets, markets, and public squares.</p>
             <div class="countdown" id="event2-countdown"></div>
           </div>
-          <a href="#" class="btn btn-red btn-sm" style="flex-shrink:0;align-self:center" onclick="showPage('events')">RSVP Now</a>
+          <a href="#" class="btn btn-red btn-sm" style="flex-shrink:0;align-self:center" onclick="window.showPage('events')">RSVP Now</a>
         </div>
       </div>
       <div style="text-align:center;margin-top:40px">
-        <a href="#" class="btn btn-gold" onclick="showPage('events')">View All Events</a>
+        <a href="#" class="btn btn-gold" onclick="window.showPage('events')">View All Events</a>
       </div>
     </div>
   </section>
@@ -1008,7 +1008,7 @@ footer{
             <div class="blog-tag">Announcement</div>
             <div class="card-title">New Drama Training Academy Launches</div>
             <p class="card-desc">RCCG Global Drama is proud to announce the launch of our online Drama Training Academy — equipping ministers across the globe with professional skills.</p>
-            <a href="#" class="btn btn-outline btn-sm" onclick="showPage('blog')">Read More</a>
+            <a href="#" class="btn btn-outline btn-sm" onclick="window.showPage('blog')">Read More</a>
           </div>
         </div>
         <div class="card perf-card fade-up">
@@ -1017,7 +1017,7 @@ footer{
             <div class="blog-tag" style="background:rgba(212,175,55,0.1);color:var(--gold);border-color:rgba(212,175,55,0.3)">Achievement</div>
             <div class="card-title">RCCG Drama Wins International Ministry Award</div>
             <p class="card-desc">We've been honoured with the Global Christian Drama Excellence Award 2024 — a testament to God's grace on this ministry.</p>
-            <a href="#" class="btn btn-outline btn-sm" onclick="showPage('blog')">Read More</a>
+            <a href="#" class="btn btn-outline btn-sm" onclick="window.showPage('blog')">Read More</a>
           </div>
         </div>
         <div class="card perf-card fade-up">
@@ -1026,7 +1026,7 @@ footer{
             <div class="blog-tag" style="background:rgba(34,197,94,0.1);color:#4ADE80;border-color:rgba(34,197,94,0.2)">Recruitment</div>
             <div class="card-title">2025 Drama Ministry Recruitment Open</div>
             <p class="card-desc">We are now accepting applications for the 2025 drama ministry intake. Actors, directors, stage managers, and musicians are welcome.</p>
-            <a href="#" class="btn btn-red btn-sm" onclick="showPage('join')">Apply Now</a>
+            <a href="#" class="btn btn-red btn-sm" onclick="window.showPage('join')">Apply Now</a>
           </div>
         </div>
       </div>
@@ -1040,8 +1040,8 @@ footer{
       <h2 class="section-title">Ready to <span class="gold">Join</span> the Ministry?</h2>
       <p style="color:var(--muted);font-size:1.05rem;margin-bottom:40px;line-height:1.8">God is calling creative hearts to carry His word through the power of drama. If you have a passion for performance and a love for Jesus, this is your stage.</p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-        <a href="#" class="btn btn-gold btn-lg" onclick="showPage('join')">✝ Join the Drama Ministry</a>
-        <a href="#" class="btn btn-outline btn-lg" onclick="showPage('contact')">Contact Us</a>
+        <a href="#" class="btn btn-gold btn-lg" onclick="window.showPage('join')">✝ Join the Drama Ministry</a>
+        <a href="#" class="btn btn-outline btn-lg" onclick="window.showPage('contact')">Contact Us</a>
       </div>
     </div>
   </section>
@@ -1139,7 +1139,7 @@ footer{
       <!-- FILTERS -->
       <div class="filter-row fade-up">
         <div class="search-box"><input type="text" placeholder="Search members..." id="member-search" oninput="filterMembers()"/></div>
-        <select class="form-select" style="max-width:200px;border-radius:100px" id="dept-filter" onchange="filterMembers()">
+        <select class="form-select" style="max-width:200px;border-radius:100px" id="dept-filter" onchange="window.filterMembers()">
           <option value="">All Departments</option>
           <option value="Acting">Acting</option>
           <option value="Direction">Direction</option>
@@ -1149,7 +1149,7 @@ footer{
           <option value="Lighting">Lighting & Sound</option>
           <option value="Leadership">Leadership</option>
         </select>
-        <select class="form-select" style="max-width:180px;border-radius:100px" id="role-filter" onchange="filterMembers()">
+        <select class="form-select" style="max-width:180px;border-radius:100px" id="role-filter" onchange="window.filterMembers()">
           <option value="">All Roles</option>
           <option value="Leader">Leadership</option>
           <option value="Admin">Admin</option>
@@ -1190,11 +1190,11 @@ footer{
       </div>
 
       <div class="gallery-filter fade-up">
-        <button class="filter-btn active" onclick="filterEvents('All',this)">All Events</button>
-        <button class="filter-btn" onclick="filterEvents('Conference',this)">Conferences</button>
-        <button class="filter-btn" onclick="filterEvents('Production',this)">Productions</button>
-        <button class="filter-btn" onclick="filterEvents('Outreach',this)">Outreach</button>
-        <button class="filter-btn" onclick="filterEvents('Training',this)">Training</button>
+        <button class="filter-btn active" onclick="window.filterEvents('All',this)">All Events</button>
+        <button class="filter-btn" onclick="window.filterEvents('Conference',this)">Conferences</button>
+        <button class="filter-btn" onclick="window.filterEvents('Production',this)">Productions</button>
+        <button class="filter-btn" onclick="window.filterEvents('Outreach',this)">Outreach</button>
+        <button class="filter-btn" onclick="window.filterEvents('Training',this)">Training</button>
       </div>
 
       <div id="events-list" style="display:flex;flex-direction:column;gap:20px"></div>
@@ -1215,17 +1215,17 @@ footer{
 
       <!-- TABS -->
       <div style="display:flex;gap:8px;justify-content:center;margin-bottom:32px" class="fade-up">
-        <button class="btn btn-gold btn-sm" id="photos-tab" onclick="switchGalleryTab('photos')">📷 Photos</button>
-        <button class="btn btn-outline btn-sm" id="videos-tab" onclick="switchGalleryTab('videos')">🎬 Videos</button>
+        <button class="btn btn-gold btn-sm" id="photos-tab" onclick="window.switchGalleryTab('photos')">📷 Photos</button>
+        <button class="btn btn-outline btn-sm" id="videos-tab" onclick="window.switchGalleryTab('videos')">🎬 Videos</button>
       </div>
 
       <div class="gallery-filter fade-up" id="gallery-filter">
-        <button class="filter-btn active" onclick="filterGallery('All',this)">All</button>
-        <button class="filter-btn" onclick="filterGallery('Easter',this)">Easter</button>
-        <button class="filter-btn" onclick="filterGallery('Christmas',this)">Christmas</button>
-        <button class="filter-btn" onclick="filterGallery('Evangelism',this)">Evangelism</button>
-        <button class="filter-btn" onclick="filterGallery('Conference',this)">Conference</button>
-        <button class="filter-btn" onclick="filterGallery('Youth',this)">Youth</button>
+        <button class="filter-btn active" onclick="window.filterGallery('All',this)">All</button>
+        <button class="filter-btn" onclick="window.filterGallery('Easter',this)">Easter</button>
+        <button class="filter-btn" onclick="window.filterGallery('Christmas',this)">Christmas</button>
+        <button class="filter-btn" onclick="window.filterGallery('Evangelism',this)">Evangelism</button>
+        <button class="filter-btn" onclick="window.filterGallery('Conference',this)">Conference</button>
+        <button class="filter-btn" onclick="window.filterGallery('Youth',this)">Youth</button>
       </div>
 
       <div id="gallery-photos" class="gallery-grid"></div>
@@ -1246,11 +1246,11 @@ footer{
       </div>
 
       <div class="gallery-filter fade-up">
-        <button class="filter-btn active" onclick="filterBlog('All',this)">All</button>
-        <button class="filter-btn" onclick="filterBlog('Devotional',this)">Devotionals</button>
-        <button class="filter-btn" onclick="filterBlog('Testimony',this)">Testimonies</button>
-        <button class="filter-btn" onclick="filterBlog('News',this)">Ministry News</button>
-        <button class="filter-btn" onclick="filterBlog('Script',this)">Drama Scripts</button>
+        <button class="filter-btn active" onclick="window.filterBlog('All',this)">All</button>
+        <button class="filter-btn" onclick="window.filterBlog('Devotional',this)">Devotionals</button>
+        <button class="filter-btn" onclick="window.filterBlog('Testimony',this)">Testimonies</button>
+        <button class="filter-btn" onclick="window.filterBlog('News',this)">Ministry News</button>
+        <button class="filter-btn" onclick="window.filterBlog('Script',this)">Drama Scripts</button>
       </div>
 
       <div class="grid-3 fade-up" id="blog-grid"></div>
@@ -1329,7 +1329,7 @@ footer{
           <input type="checkbox" id="agree" style="margin-top:4px"/>
           <label for="agree" style="font-size:13px;color:var(--muted);cursor:pointer">I agree to the RCCG Global Drama Ministry code of conduct and confirm that I am an active member of an RCCG parish.</label>
         </div>
-        <button class="btn btn-gold w-full" style="justify-content:center;font-size:15px;padding:14px" onclick="submitApplication()">Submit Application ✝</button>
+        <button class="btn btn-gold w-full" style="justify-content:center;font-size:15px;padding:14px" onclick="window.submitApplication()">Submit Application ✝</button>
       </div>
     </div>
   </div>
@@ -1366,11 +1366,11 @@ footer{
           <div>
             <div class="contact-item-title" style="font-family:var(--font-serif);color:var(--white);margin-bottom:14px;font-size:14px;font-weight:700">Follow & Connect</div>
             <div class="social-links">
-              <a href="#" class="social-btn wa-btn" onclick="showNotif('📱','WhatsApp','Opening WhatsApp chat...')">📱 WhatsApp</a>
-              <a href="#" class="social-btn" onclick="showNotif('🐦','Twitter','Opening Twitter/X profile...')">🐦 Twitter/X</a>
-              <a href="#" class="social-btn" onclick="showNotif('📘','Facebook','Opening Facebook page...')">📘 Facebook</a>
-              <a href="#" class="social-btn" onclick="showNotif('📸','Instagram','Opening Instagram page...')">📸 Instagram</a>
-              <a href="#" class="social-btn" onclick="showNotif('▶','YouTube','Opening YouTube channel...')">▶ YouTube</a>
+              <a href="#" class="social-btn wa-btn" onclick="window.showNotif('📱','WhatsApp','Opening WhatsApp chat...')">📱 WhatsApp</a>
+              <a href="#" class="social-btn" onclick="window.showNotif('🐦','Twitter','Opening Twitter/X profile...')">🐦 Twitter/X</a>
+              <a href="#" class="social-btn" onclick="window.showNotif('📘','Facebook','Opening Facebook page...')">📘 Facebook</a>
+              <a href="#" class="social-btn" onclick="window.showNotif('📸','Instagram','Opening Instagram page...')">📸 Instagram</a>
+              <a href="#" class="social-btn" onclick="window.showNotif('▶','YouTube','Opening YouTube channel...')">▶ YouTube</a>
             </div>
           </div>
         </div>
@@ -1421,7 +1421,7 @@ footer{
         <label class="form-label">Password</label>
         <input class="form-input" type="password" id="admin-password" placeholder="••••••••••" onkeypress="if(event.key==='Enter')adminLogin()"/>
       </div>
-      <button class="btn btn-gold w-full" style="justify-content:center;margin-bottom:16px" onclick="adminLogin()">🔐 Sign In to Dashboard</button>
+      <button class="btn btn-gold w-full" style="justify-content:center;margin-bottom:16px" onclick="window.adminLogin()">🔐 Sign In to Dashboard</button>
       <p style="font-size:12px;color:var(--muted)">Secured by Firebase Authentication · Only verified administrators may access this portal.</p>
       <div style="margin-top:20px;padding:12px;background:var(--dark3);border-radius:var(--radius);font-size:12px;color:var(--muted)">
         <strong style="color:var(--gold)">Demo credentials:</strong><br/>admin@rccg.org / admin123
@@ -1448,7 +1448,7 @@ footer{
           <span style="font-size:13px;color:var(--white)">Super Admin</span>
           <span class="badge badge-blue" style="font-size:10px">✓ Verified</span>
         </div>
-        <button class="btn btn-outline btn-sm" onclick="adminLogout()">Sign Out</button>
+        <button class="btn btn-outline btn-sm" onclick="window.adminLogout()">Sign Out</button>
       </div>
     </div>
 
@@ -1457,27 +1457,27 @@ footer{
       <div class="admin-sidebar">
         <div class="sidebar-section">
           <div class="sidebar-label">Overview</div>
-          <button class="sidebar-link active" onclick="showAdminView('dashboard',this)"><span class="sidebar-icon">📊</span>Dashboard</button>
-          <button class="sidebar-link" onclick="showAdminView('analytics',this)"><span class="sidebar-icon">📈</span>Analytics</button>
+          <button class="sidebar-link active" onclick="window.showAdminView('dashboard',this)"><span class="sidebar-icon">📊</span>Dashboard</button>
+          <button class="sidebar-link" onclick="window.showAdminView('analytics',this)"><span class="sidebar-icon">📈</span>Analytics</button>
         </div>
         <div class="sidebar-section">
           <div class="sidebar-label">People</div>
-          <button class="sidebar-link" onclick="showAdminView('members',this)"><span class="sidebar-icon">👥</span>Members</button>
-          <button class="sidebar-link" onclick="showAdminView('admins',this)"><span class="sidebar-icon">🛡</span>Administrators</button>
-          <button class="sidebar-link" onclick="showAdminView('applications',this)"><span class="sidebar-icon">📋</span>Applications</button>
+          <button class="sidebar-link" onclick="window.showAdminView('members',this)"><span class="sidebar-icon">👥</span>Members</button>
+          <button class="sidebar-link" onclick="window.showAdminView('admins',this)"><span class="sidebar-icon">🛡</span>Administrators</button>
+          <button class="sidebar-link" onclick="window.showAdminView('applications',this)"><span class="sidebar-icon">📋</span>Applications</button>
         </div>
         <div class="sidebar-section">
           <div class="sidebar-label">Content</div>
-          <button class="sidebar-link" onclick="showAdminView('events-admin',this)"><span class="sidebar-icon">📅</span>Events</button>
-          <button class="sidebar-link" onclick="showAdminView('gallery-admin',this)"><span class="sidebar-icon">🖼</span>Gallery</button>
-          <button class="sidebar-link" onclick="showAdminView('blog-admin',this)"><span class="sidebar-icon">📝</span>Blog & Scripts</button>
-          <button class="sidebar-link" onclick="showAdminView('announcements',this)"><span class="sidebar-icon">📢</span>Announcements</button>
+          <button class="sidebar-link" onclick="window.showAdminView('events-admin',this)"><span class="sidebar-icon">📅</span>Events</button>
+          <button class="sidebar-link" onclick="window.showAdminView('gallery-admin',this)"><span class="sidebar-icon">🖼</span>Gallery</button>
+          <button class="sidebar-link" onclick="window.showAdminView('blog-admin',this)"><span class="sidebar-icon">📝</span>Blog & Scripts</button>
+          <button class="sidebar-link" onclick="window.showAdminView('announcements',this)"><span class="sidebar-icon">📢</span>Announcements</button>
         </div>
         <div class="sidebar-section">
           <div class="sidebar-label">System</div>
-          <button class="sidebar-link" onclick="showAdminView('notifications-admin',this)"><span class="sidebar-icon">🔔</span>Notifications</button>
-          <button class="sidebar-link" onclick="showAdminView('activity',this)"><span class="sidebar-icon">📋</span>Activity Log</button>
-          <button class="sidebar-link" onclick="showAdminView('settings',this)"><span class="sidebar-icon">⚙</span>Settings</button>
+          <button class="sidebar-link" onclick="window.showAdminView('notifications-admin',this)"><span class="sidebar-icon">🔔</span>Notifications</button>
+          <button class="sidebar-link" onclick="window.showAdminView('activity',this)"><span class="sidebar-icon">📋</span>Activity Log</button>
+          <button class="sidebar-link" onclick="window.showAdminView('settings',this)"><span class="sidebar-icon">⚙</span>Settings</button>
         </div>
       </div>
 
@@ -1506,9 +1506,9 @@ footer{
             <div class="admin-panel">
               <div class="admin-panel-title">⚡ Quick Actions</div>
               <div style="display:flex;flex-direction:column;gap:10px">
-                <button class="btn btn-gold w-full" style="justify-content:center" onclick="showAdminView('applications',document.querySelector('.sidebar-link:nth-child(3))'))">Review Applications (18)</button>
-                <button class="btn btn-outline w-full" style="justify-content:center" onclick="openPublishModal()">📢 Publish Announcement</button>
-                <button class="btn btn-outline w-full" style="justify-content:center" onclick="showNotif('📅','Events','Navigate to Events to add new event.')">📅 Add New Event</button>
+                <button class="btn btn-gold w-full" style="justify-content:center" onclick="window.showAdminView('applications',document.querySelector('.sidebar-link:nth-child(3))'))">Review Applications (18)</button>
+                <button class="btn btn-outline w-full" style="justify-content:center" onclick="window.openPublishModal()">📢 Publish Announcement</button>
+                <button class="btn btn-outline w-full" style="justify-content:center" onclick="window.showNotif('📅','Events','Navigate to Events to add new event.')">📅 Add New Event</button>
                 <button class="btn btn-outline w-full" style="justify-content:center" onclick="window.showAdminView('gallery-admin', document.querySelector('[onclick*=gallery-admin]'))">🖼 Upload Media</button>
                 <button class="btn btn-outline w-full" style="justify-content:center" onclick="window.checkNewsletterSubs()">✉ View Newsletter Subscribers</button>
                 <button class="btn btn-outline w-full" style="justify-content:center;border-color:var(--red);color:var(--red-light)" onclick="window.showAdminView('settings', document.querySelector('[onclick*=settings]'))">⚙ Edit Homepage</button>
@@ -1535,7 +1535,7 @@ footer{
         <div class="admin-view" id="view-admins">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
             <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;font-weight:700">Administrator Management</h2>
-            <button class="btn btn-gold btn-sm" onclick="showNotif('🛡','Admin Added','Invite new admin form would open here.')">+ Invite Admin</button>
+            <button class="btn btn-gold btn-sm" onclick="window.showNotif('🛡','Admin Added','Invite new admin form would open here.')">+ Invite Admin</button>
           </div>
           <!-- INVITE NEW ADMIN FORM -->
           <div class="admin-panel" style="margin-bottom:24px">
@@ -1636,7 +1636,7 @@ footer{
               <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px;color:var(--off-white)"><input type="checkbox"/> Weekly ministry digest</label>
               <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px;color:var(--off-white)"><input type="checkbox" checked/> Real-time admin activity alerts</label>
             </div>
-            <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="showNotif('✅','Saved','Notification preferences updated.')">Save Preferences</button>
+            <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="window.showNotif('✅','Saved','Notification preferences updated.')">Save Preferences</button>
           </div>
         </div>
 
@@ -1673,7 +1673,7 @@ footer{
           <div class="admin-panel">
             <div class="form-group"><label class="form-label">Notification Title</label><input class="form-input" type="text" placeholder="e.g. New event announced!"/></div>
             <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" placeholder="Notification message..."></textarea></div>
-            <button class="btn btn-gold" onclick="showNotif('🔔','Notifications Sent','Push notifications delivered via Firebase Cloud Messaging.')">Send Notifications</button>
+            <button class="btn btn-gold" onclick="window.showNotif('🔔','Notifications Sent','Push notifications delivered via Firebase Cloud Messaging.')">Send Notifications</button>
           </div>
         </div>
 
@@ -1697,20 +1697,20 @@ footer{
       <div>
         <div class="footer-heading">Quick Links</div>
         <ul class="footer-links">
-          <li><a href="#" onclick="showPage('home')">Home</a></li>
-          <li><a href="#" onclick="showPage('about')">About Us</a></li>
-          <li><a href="#" onclick="showPage('team')">Drama Team</a></li>
-          <li><a href="#" onclick="showPage('events')">Events</a></li>
-          <li><a href="#" onclick="showPage('gallery')">Gallery</a></li>
+          <li><a href="#" onclick="window.showPage('home')">Home</a></li>
+          <li><a href="#" onclick="window.showPage('about')">About Us</a></li>
+          <li><a href="#" onclick="window.showPage('team')">Drama Team</a></li>
+          <li><a href="#" onclick="window.showPage('events')">Events</a></li>
+          <li><a href="#" onclick="window.showPage('gallery')">Gallery</a></li>
         </ul>
       </div>
       <div>
         <div class="footer-heading">Ministry</div>
         <ul class="footer-links">
-          <li><a href="#" onclick="showPage('blog')">Blog & Testimonies</a></li>
-          <li><a href="#" onclick="showPage('join')">Join Us</a></li>
-          <li><a href="#" onclick="showPage('contact')">Contact</a></li>
-          <li><a href="#" onclick="showAdminLogin()">Admin Portal</a></li>
+          <li><a href="#" onclick="window.showPage('blog')">Blog & Testimonies</a></li>
+          <li><a href="#" onclick="window.showPage('join')">Join Us</a></li>
+          <li><a href="#" onclick="window.showPage('contact')">Contact</a></li>
+          <li><a href="#" onclick="window.showAdminLogin()">Admin Portal</a></li>
           <li><a href="#">Privacy Policy</a></li>
         </ul>
       </div>
