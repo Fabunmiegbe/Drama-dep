@@ -913,34 +913,8 @@ footer{
         <p class="section-desc">Powerful drama productions that have moved audiences and transformed lives across the globe.</p>
         <div class="divider"><div class="divider-line"></div><span class="divider-icon">✦</span><div class="divider-line"></div></div>
       </div>
-      <div class="grid-3">
-        <div class="card perf-card fade-up">
-          <div class="card-img"><div class="card-img-inner" style="background:linear-gradient(135deg,#1A0505,#2D0A0A)">✝</div><span class="card-badge">Easter Special</span></div>
-          <div class="card-body">
-            <div class="card-title">The Passion: Redemption's Price</div>
-            <div class="card-meta"><span>📅 April 2024</span><span>🎭 Full Production</span></div>
-            <p class="card-desc">A breathtaking portrayal of Christ's sacrifice — from Gethsemane to Golgotha — that left thousands weeping and surrendering to the Lord.</p>
-            <a href="#" class="btn btn-outline btn-sm" onclick="window.showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
-          </div>
-        </div>
-        <div class="card perf-card fade-up">
-          <div class="card-img"><div class="card-img-inner" style="background:linear-gradient(135deg,#050A1A,#0A102D)">⭐</div><span class="card-badge">Christmas</span></div>
-          <div class="card-body">
-            <div class="card-title">Emmanuel: God Among Us</div>
-            <div class="card-meta"><span>📅 December 2023</span><span>🎭 Musical Drama</span></div>
-            <p class="card-desc">A magnificent musical drama celebrating the birth of Christ — featuring a cast of 80 performers, original compositions, and stunning stagecraft.</p>
-            <a href="#" class="btn btn-outline btn-sm" onclick="window.showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
-          </div>
-        </div>
-        <div class="card perf-card fade-up">
-          <div class="card-img"><div class="card-img-inner" style="background:linear-gradient(135deg,#0A1A05,#102D0A)">🕊</div><span class="card-badge">Evangelism</span></div>
-          <div class="card-body">
-            <div class="card-title">Prodigal: The Road Home</div>
-            <div class="card-meta"><span>📅 March 2024</span><span>🎭 Outdoor Outreach</span></div>
-            <p class="card-desc">An open-air evangelism production that reached deep into communities — over 3,000 people responded to the altar call during the run.</p>
-            <a href="#" class="btn btn-outline btn-sm" onclick="window.showNotif('🎭','Coming Soon','Full production details will be available shortly.')">View Production</a>
-          </div>
-        </div>
+      <div class="grid-3" id="performances-grid">
+        <div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1">Loading performances...</div>
       </div>
     </div>
   </section>
@@ -1424,6 +1398,7 @@ footer{
         <div class="sidebar-section">
           <div class="sidebar-label">Content</div>
           <button class="sidebar-link" onclick="window.showAdminView('events-admin',this)"><span class="sidebar-icon">📅</span>Events</button>
+          <button class="sidebar-link" onclick="window.showAdminView('performances-admin',this)"><span class="sidebar-icon">🎭</span>Performances</button>
           <button class="sidebar-link" onclick="window.showAdminView('gallery-admin',this)"><span class="sidebar-icon">🖼</span>Gallery</button>
           <button class="sidebar-link" onclick="window.showAdminView('blog-admin',this)"><span class="sidebar-icon">📝</span>Blog & Scripts</button>
           <button class="sidebar-link" onclick="window.showAdminView('announcements',this)"><span class="sidebar-icon">📢</span>Announcements</button>
@@ -1602,6 +1577,11 @@ footer{
         <div class="admin-view" id="view-events-admin">
           <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;margin-bottom:24px;font-weight:700">Events Management</h2>
           <div id="events-admin-panel"></div>
+        </div>
+        <!-- PERFORMANCES ADMIN -->
+        <div class="admin-view" id="view-performances-admin">
+          <h2 style="font-family:var(--font-serif);color:var(--white);font-size:1.4rem;margin-bottom:24px;font-weight:700">Featured Performances</h2>
+          <div id="performances-admin-panel"></div>
         </div>
         <!-- GALLERY ADMIN -->
         <div class="admin-view" id="view-gallery-admin">
@@ -2361,15 +2341,28 @@ window.publishEvent = async function(){
   const loc=document.getElementById('event-loc')?.value?.trim();
   const time=document.getElementById('event-time')?.value?.trim();
   const cat=document.getElementById('event-cat')?.value;
+  const ticket=document.getElementById('event-ticket')?.value||'Free Entry';
+  const featured=document.getElementById('event-featured')?.value==='true';
   const desc=document.getElementById('event-desc')?.value?.trim();
-  if(!title||!date){showNotif('⚠','Missing Fields','Title and date are required.');return;}
-  const d=new Date(date);
+  if(!title||!date){showNotif('⚠','Missing Fields','Event title and date are required.');return;}
+  const d=new Date(date+'T00:00:00');
   try{
-    await addDoc(collection(db,'events'),{title,date,loc,time,cat,desc,day:String(d.getDate()),month:d.toLocaleString('en',{month:'short'}),year:d.getFullYear(),ticket:'Registration Required',createdAt:serverTimestamp()});
+    await addDoc(collection(db,'events'),{
+      title,date,loc,time,cat,ticket,featured,desc,
+      day:String(d.getDate()),
+      month:d.toLocaleString('en',{month:'short'}),
+      year:d.getFullYear(),
+      createdAt:serverTimestamp()
+    });
     await addDoc(collection(db,'activityLog'),{icon:'📅',cls:'blue',text:`Event created: "${title}".`,timestamp:serverTimestamp()});
-    showNotif('✅','Event Added!',`"${title}" has been added to the calendar.`);
+    // Clear form
+    ['event-title','event-loc','event-time','event-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    const ed=document.getElementById('event-date');if(ed)ed.value='';
+    showNotif('✅','Event Added!',`"${title}" is now live on the Events page.`);
+    window.loadAdminEventsList();
     window.loadEvents();
-  }catch(e){showNotif('⚠','Error',e.message);}
+    window.loadHomeEvents();
+  }catch(e){showNotif('⚠','Error — Check Firestore Rules',e.message);}
 };
 
 window.handleGalleryUpload = async function(){
@@ -2649,6 +2642,7 @@ window.showAdminView = function(view,btn){
   if(view==='gallery-admin')renderAdminGalleryPanel();
   if(view==='blog-admin')renderAdminBlogPanel();
   if(view==='events-admin')renderAdminEventsPanel();
+  if(view==='performances-admin')renderAdminPerformancesPanel();
 };
 
 function renderAdminGalleryPanel(){
@@ -2674,19 +2668,168 @@ function renderAdminBlogPanel(){
 
 function renderAdminEventsPanel(){
   const el=document.getElementById('events-admin-panel');if(!el)return;
-  el.innerHTML=`<div class="admin-panel"><div class="admin-panel-title">📅 Add New Event (Firestore)</div>
-    <div class="form-group"><label class="form-label">Event Title</label><input class="form-input" type="text" id="event-title" placeholder="Event name"/></div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="event-date"/></div>
-      <div class="form-group"><label class="form-label">Category</label><select class="form-select" id="event-cat"><option>Conference</option><option>Production</option><option>Outreach</option><option>Training</option></select></div>
+  el.innerHTML=`
+    <div class="admin-panel">
+      <div class="admin-panel-title">📅 Add New Event</div>
+      <div class="form-group"><label class="form-label">Event Title *</label><input class="form-input" type="text" id="event-title" placeholder="e.g. National Drama Convention 2025"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Date *</label><input class="form-input" type="date" id="event-date"/></div>
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-select" id="event-cat">
+            <option>Conference</option><option>Production</option><option>Outreach</option><option>Training</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Location</label><input class="form-input" type="text" id="event-loc" placeholder="Venue, City, Country"/></div>
+        <div class="form-group"><label class="form-label">Time</label><input class="form-input" type="text" id="event-time" placeholder="e.g. 9:00 AM – 6:00 PM"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Entry / Ticket</label>
+          <select class="form-select" id="event-ticket">
+            <option>Free Entry</option><option>Registration Required</option><option>Ticketed Event</option><option>Members Only</option><option>Open Public</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Featured?</label>
+          <select class="form-select" id="event-featured">
+            <option value="false">No</option><option value="true">Yes — show on home page</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="event-desc" placeholder="Describe the event..." style="min-height:100px"></textarea></div>
+      <button class="btn btn-gold" onclick="window.publishEvent()">➕ Add Event</button>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Location</label><input class="form-input" type="text" id="event-loc" placeholder="Venue, City"/></div>
-      <div class="form-group"><label class="form-label">Time</label><input class="form-input" type="text" id="event-time" placeholder="e.g. 9:00 AM – 6:00 PM"/></div>
-    </div>
-    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="event-desc" placeholder="Event details..."></textarea></div>
-    <button class="btn btn-gold" onclick="window.publishEvent()">Add Event to Firestore</button></div>`;
+    <div class="admin-panel" style="margin-top:24px">
+      <div class="admin-panel-title">📋 All Events</div>
+      <div id="admin-events-list"><div style="color:var(--muted);text-align:center;padding:20px">Loading...</div></div>
+    </div>`;
+  window.loadAdminEventsList();
 }
+
+window.loadAdminEventsList = async function(){
+  const el=document.getElementById('admin-events-list');
+  if(!el)return;
+  try{
+    const snap=await getDocs(query(collection(db,'events'),orderBy('date','desc')));
+    const events=[];snap.forEach(d=>events.push({id:d.id,...d.data()}));
+    if(events.length===0){
+      el.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">No events yet. Add your first event above.</div>';
+      return;
+    }
+    el.innerHTML=`<table class="data-table">
+      <thead><tr><th>Title</th><th>Date</th><th>Category</th><th>Location</th><th>Actions</th></tr></thead>
+      <tbody>${events.map(e=>`<tr>
+        <td><strong>${e.title}</strong></td>
+        <td>${e.date||'—'}</td>
+        <td><span class="badge badge-gold">${e.cat||'—'}</span></td>
+        <td style="font-size:12px;color:var(--muted)">${e.loc||'—'}</td>
+        <td class="table-actions">
+          <button class="action-btn danger" onclick="window.deleteEvent('${e.id}','${(e.title||'').replace(/'/g,"\\'")}')">Delete</button>
+        </td></tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){el.innerHTML=`<div style="color:var(--muted);padding:20px">${e.message}</div>`;}
+};
+
+window.deleteEvent = async function(id,title){
+  if(!confirm(`Delete "${title}"? This cannot be undone.`))return;
+  try{
+    await deleteDoc(doc(db,'events',id));
+    await addDoc(collection(db,'activityLog'),{icon:'🗑',cls:'red',text:`Event deleted: "${title}".`,timestamp:serverTimestamp()});
+    showNotif('✅','Event Deleted',`"${title}" has been removed.`);
+    window.loadAdminEventsList();
+    window.loadEvents();
+    window.loadHomeEvents();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+function renderAdminPerformancesPanel(){
+  const el=document.getElementById('performances-admin-panel');if(!el)return;
+  el.innerHTML=`
+    <div class="admin-panel">
+      <div class="admin-panel-title">🎭 Add Featured Performance</div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:16px">These appear in the "Featured Performances" section on the home page.</p>
+      <div class="form-group"><label class="form-label">Performance Title *</label><input class="form-input" type="text" id="perf-title" placeholder="e.g. The Passion: Redemption's Price"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Date / Season</label><input class="form-input" type="text" id="perf-date" placeholder="e.g. April 2025"/></div>
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-select" id="perf-cat">
+            <option>Easter</option><option>Christmas</option><option>Evangelism</option>
+            <option>Conference</option><option>Youth</option><option>Training</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Production Type</label>
+        <input class="form-input" type="text" id="perf-type" placeholder="e.g. Full Production, Musical Drama, Outdoor Outreach"/>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label>
+        <textarea class="form-textarea" id="perf-desc" placeholder="Describe this production..." style="min-height:100px"></textarea>
+      </div>
+      <div class="form-group"><label class="form-label">Cover Image (optional)</label>
+        <input class="form-input" type="file" id="perf-image" accept="image/*" style="padding:10px"/>
+      </div>
+      <button class="btn btn-gold" onclick="window.savePerformance()">➕ Add Performance</button>
+    </div>
+    <div class="admin-panel" style="margin-top:24px">
+      <div class="admin-panel-title">🎭 All Performances</div>
+      <div id="admin-performances-list"><div style="color:var(--muted);text-align:center;padding:20px">Loading...</div></div>
+    </div>`;
+  loadAdminPerformancesList();
+}
+
+async function loadAdminPerformancesList(){
+  const el=document.getElementById('admin-performances-list');if(!el)return;
+  try{
+    const snap=await getDocs(query(collection(db,'performances'),orderBy('createdAt','desc')));
+    const items=[];snap.forEach(d=>items.push({id:d.id,...d.data()}));
+    if(items.length===0){el.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px">No performances yet.</div>';return;}
+    el.innerHTML=`<table class="data-table">
+      <thead><tr><th>Title</th><th>Date</th><th>Category</th><th>Actions</th></tr></thead>
+      <tbody>${items.map(p=>`<tr>
+        <td><strong>${p.title}</strong></td>
+        <td>${p.date||'—'}</td>
+        <td><span class="badge badge-gold">${p.category||'—'}</span></td>
+        <td class="table-actions">
+          <button class="action-btn danger" onclick="window.deletePerformance('${p.id}','${(p.title||'').replace(/'/g,"\\'")}')">Delete</button>
+        </td></tr>`).join('')}
+      </tbody></table>`;
+  }catch(e){el.innerHTML=`<div style="color:var(--muted);padding:20px">${e.message}</div>`;}
+}
+
+window.savePerformance = async function(){
+  const title=document.getElementById('perf-title')?.value?.trim();
+  const date=document.getElementById('perf-date')?.value?.trim();
+  const category=document.getElementById('perf-cat')?.value;
+  const type=document.getElementById('perf-type')?.value?.trim();
+  const description=document.getElementById('perf-desc')?.value?.trim();
+  const imageInput=document.getElementById('perf-image');
+  if(!title){showNotif('⚠','Missing Title','Performance title is required.');return;}
+  let imageUrl='';
+  if(imageInput?.files[0]){
+    showNotif('⏳','Uploading image...','Please wait...');
+    try{imageUrl=await window.uploadToCloudinary(imageInput.files[0],'performances');}catch(e){}
+  }
+  try{
+    await addDoc(collection(db,'performances'),{title,date,category,type,description,imageUrl,createdAt:serverTimestamp()});
+    await addDoc(collection(db,'activityLog'),{icon:'🎭',cls:'gold',text:`Performance added: "${title}".`,timestamp:serverTimestamp()});
+    ['perf-title','perf-date','perf-type','perf-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    if(imageInput)imageInput.value='';
+    showNotif('✅','Performance Added!',`"${title}" is now featured on the home page.`);
+    loadAdminPerformancesList();
+    window.loadPerformances();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.deletePerformance = async function(id,title){
+  if(!confirm(`Delete "${title}"?`))return;
+  try{
+    await deleteDoc(doc(db,'performances',id));
+    await addDoc(collection(db,'activityLog'),{icon:'🗑',cls:'red',text:`Performance deleted: "${title}".`,timestamp:serverTimestamp()});
+    showNotif('✅','Deleted',`"${title}" removed.`);
+    loadAdminPerformancesList();
+    window.loadPerformances();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
 
 function renderAnalytics(){
   const el=document.getElementById('country-bars');if(!el)return;
@@ -2708,13 +2851,64 @@ window.showPage = function(page){
   if(page==='gallery')window.loadGallery();
   if(page==='blog')window.loadBlog();
   if(page==='events')window.loadEvents();
-  if(page==='home'){window.loadAnnouncements();window.loadHomeEvents();window.loadHeroStats();}
-  if(page==='admin'){window.loadAdminDashboard();renderAdminGalleryPanel();renderAdminBlogPanel();renderAdminEventsPanel();}
+  if(page==='home'){window.loadAnnouncements();window.loadHomeEvents();window.loadHeroStats();window.loadPerformances();}
+  if(page==='admin'){window.loadAdminDashboard();renderAdminGalleryPanel();renderAdminBlogPanel();renderAdminEventsPanel();renderAdminPerformancesPanel();}
   initFadeUps();
 };
 window.showAdminLogin=function(){window.showPage('admin-login');};
 
-// ==================== HERO STATS (LIVE FROM FIRESTORE SETTINGS) ====================
+// ==================== FEATURED PERFORMANCES (HOME PAGE) ====================
+window.loadPerformances = async function(){
+  const grid=document.getElementById('performances-grid');
+  if(!grid)return;
+  try{
+    const snap=await getDocs(query(collection(db,'performances'),orderBy('createdAt','desc')));
+    const items=[];snap.forEach(d=>items.push({id:d.id,...d.data()}));
+    if(items.length===0){
+      grid.innerHTML=`<div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1">
+        <div style="font-size:48px;margin-bottom:16px">🎭</div>
+        <p>No performances yet. Add them from <strong style="color:var(--gold)">Admin → Performances</strong>.</p>
+      </div>`;
+      return;
+    }
+    const bgColors=['linear-gradient(135deg,#1A0505,#2D0A0A)','linear-gradient(135deg,#050A1A,#0A102D)','linear-gradient(135deg,#0A1A05,#102D0A)','linear-gradient(135deg,#1A0A05,#2D1A0A)'];
+    const emojis={'Easter':'✝','Christmas':'⭐','Evangelism':'🕊','Conference':'🎭','Youth':'👦','Training':'🎓'};
+    grid.innerHTML=items.slice(0,3).map((p,i)=>`
+      <div class="card perf-card fade-up">
+        <div class="card-img">
+          ${p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;height:100%;object-fit:cover"/>`:
+            `<div class="card-img-inner" style="background:${bgColors[i%bgColors.length]}">${emojis[p.category]||'🎭'}</div>`}
+          <span class="card-badge">${p.category||'Production'}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-title">${p.title}</div>
+          <div class="card-meta"><span>📅 ${p.date||''}</span><span>🎭 ${p.type||'Production'}</span></div>
+          <p class="card-desc">${(p.description||'').substring(0,150)}${(p.description||'').length>150?'...':''}</p>
+          <button class="btn btn-outline btn-sm" onclick="window.openPerformanceModal('${p.id}')">View Production</button>
+        </div>
+      </div>`).join('');
+    initFadeUps();
+  }catch(e){
+    grid.innerHTML=`<div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1">Could not load performances.<br><small>${e.message}</small></div>`;
+  }
+};
+
+window.openPerformanceModal = async function(id){
+  try{
+    const snap=await getDoc(doc(db,'performances',id));
+    if(!snap.exists())return;
+    const p=snap.data();
+    document.getElementById('modal-content').innerHTML=`
+      <div class="blog-tag" style="margin-bottom:12px">${p.category||'Production'}</div>
+      <div class="modal-title" style="margin-bottom:8px">${p.title}</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:16px">${p.date||''} · ${p.type||''}</div>
+      ${p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;border-radius:var(--radius);margin-bottom:16px;max-height:280px;object-fit:cover"/>`:''}
+      <div style="color:var(--off-white);line-height:1.9;font-size:15px">${p.description||''}</div>`;
+    document.getElementById('modal-overlay').classList.remove('hidden');
+  }catch(e){}
+};
+
+
 window.loadHeroStats = async function(){
   try{
     const snap=await getDoc(doc(db,'settings','homepage'));
@@ -2799,6 +2993,7 @@ window.loadEvents();
 window.loadAnnouncements();
 window.loadHomeEvents();
 window.loadHeroStats();
+window.loadPerformances();
 setTimeout(initFadeUps,200);
 
 </script>
