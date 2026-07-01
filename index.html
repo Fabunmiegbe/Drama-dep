@@ -1620,8 +1620,16 @@ footer{
             </div>
             <button class="btn btn-gold" onclick="window.saveSettings()">Save to Firestore</button>
           </div>
-          <div class="admin-panel">
-            <div class="admin-panel-title">✉ Email Notifications</div>
+          <div class="admin-panel" style="border-color:rgba(192,57,43,0.3)">
+            <div class="admin-panel-title" style="color:var(--red-light)">🗑 Clear Placeholder Data</div>
+            <p style="color:var(--muted);font-size:14px;margin-bottom:16px;line-height:1.7">If the website auto-populated fake member names, events, or blog posts on first load, use these buttons to wipe them from Firestore so you can add your real ministry data.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:10px">
+              <button class="btn btn-sm" style="border:1.5px solid var(--red);color:var(--red-light);background:transparent" onclick="window.clearCollection('members','All placeholder members deleted. You can now add real members.')">Clear All Members</button>
+              <button class="btn btn-sm" style="border:1.5px solid var(--red);color:var(--red-light);background:transparent" onclick="window.clearCollection('events','All placeholder events deleted.')">Clear All Events</button>
+              <button class="btn btn-sm" style="border:1.5px solid var(--red);color:var(--red-light);background:transparent" onclick="window.clearCollection('blog','All placeholder blog posts deleted.')">Clear All Blog Posts</button>
+              <button class="btn btn-sm" style="border:1.5px solid var(--red);color:var(--red-light);background:transparent" onclick="window.clearCollection('gallery','All placeholder gallery items deleted.')">Clear Gallery</button>
+            </div>
+          </div>
             <div style="display:flex;flex-direction:column;gap:12px">
               <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px;color:var(--off-white)"><input type="checkbox" checked/> Notify on new membership applications</label>
               <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px;color:var(--off-white)"><input type="checkbox" checked/> Notify on new contact messages</label>
@@ -1740,7 +1748,7 @@ const firebaseConfig = {
   measurementId: "G-D5KC1BKYFY"
 };
 const CLOUDINARY_CLOUD = 'dhqjkpfzy';
-const CLOUDINARY_PRESET = 'ml_default';
+const CLOUDINARY_PRESET = 'rccg_global_drama';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -1851,7 +1859,11 @@ window.loadMembers = async function(){
   try{
     const snap=await getDocs(query(collection(db,'members'),orderBy('name')));
     const all=[];snap.forEach(d=>all.push({id:d.id,...d.data()}));
-    if(all.length===0){await seedMembers();window.loadMembers();return;}
+    if(all.length===0){
+      if(lgrid)lgrid.innerHTML='<div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px">No leadership added yet. Add members from the Admin Dashboard.</div>';
+      grid.innerHTML='<div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px">No members yet. Add your first member from the Admin → Members panel.</div>';
+      return;
+    }
     if(lgrid)lgrid.innerHTML=all.filter(m=>m.isLeader).map(memberCard).join('')||'<div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:20px">No leaders yet.</div>';
     grid.innerHTML=all.filter(m=>!m.isLeader).map(memberCard).join('')||'<div style="color:var(--muted);grid-column:1/-1;text-align:center;padding:20px">No members yet.</div>';
   }catch(e){grid.innerHTML=`<div style="color:var(--red-light);text-align:center;padding:40px;grid-column:1/-1">Could not load members.<br><small style="color:var(--muted)">${e.message}</small></div>`;}
@@ -1892,7 +1904,10 @@ window.loadEvents = async function(catFilter='All'){
   try{
     const snap=await getDocs(query(collection(db,'events'),orderBy('date')));
     let events=[];snap.forEach(d=>events.push({id:d.id,...d.data()}));
-    if(events.length===0){await seedEvents();window.loadEvents(catFilter);return;}
+    if(events.length===0){
+      el.innerHTML='<div style="color:var(--muted);text-align:center;padding:60px">No events yet. Add your first event from Admin → Events.</div>';
+      return;
+    }
     if(catFilter!=='All')events=events.filter(e=>e.cat===catFilter);
     el.innerHTML=events.map(e=>eventCard(e)).join('')||'<div style="color:var(--muted);text-align:center;padding:40px">No events found.</div>';
     startCountdowns();
@@ -1932,7 +1947,11 @@ window.loadGallery = async function(catFilter='All',type='photos'){
   try{
     const snap=await getDocs(query(collection(db,coll),orderBy('createdAt','desc')));
     let items=[];snap.forEach(d=>items.push({id:d.id,...d.data()}));
-    if(items.length===0&&type==='photos'){await seedGallery();window.loadGallery(catFilter,type);return;}
+    if(items.length===0&&type==='photos'){
+      pg.style.display='grid';vg.style.display='none';
+      pg.innerHTML='<div style="color:var(--muted);text-align:center;padding:60px;grid-column:1/-1">No photos yet. Upload from Admin → Gallery.</div>';
+      return;
+    }
     if(catFilter!=='All')items=items.filter(i=>i.cat===catFilter);
     if(type==='photos'){
       pg.style.display='grid';vg.style.display='none';
@@ -2005,7 +2024,10 @@ window.loadBlog = async function(tagFilter='All'){
   try{
     const snap=await getDocs(query(collection(db,'blog'),orderBy('createdAt','desc')));
     let posts=[];snap.forEach(d=>posts.push({id:d.id,...d.data()}));
-    if(posts.length===0){await seedBlog();window.loadBlog(tagFilter);return;}
+    if(posts.length===0){
+      el.innerHTML='<div style="color:var(--muted);text-align:center;padding:60px;grid-column:1/-1">No blog posts yet. Publish your first post from Admin → Blog.</div>';
+      return;
+    }
     if(tagFilter!=='All')posts=posts.filter(p=>p.tag===tagFilter);
     const tags={'Script':'📜','Devotional':'📖','Testimony':'🙏','News':'📢'};
     el.innerHTML=posts.map(b=>`
@@ -2511,6 +2533,18 @@ window.removeAdmin = async function(id, name){
     });
     showNotif('✅','Admin Removed',`${name} has been removed from the admin registry.`);
     window.loadAdminsTable();
+  }catch(e){showNotif('⚠','Error',e.message);}
+};
+
+window.clearCollection = async function(collName, successMsg){
+  if(!confirm(`Delete ALL documents in "${collName}"? This cannot be undone.`))return;
+  try{
+    const snap=await getDocs(collection(db,collName));
+    const deletes=[];
+    snap.forEach(d=>deletes.push(deleteDoc(doc(db,collName,d.id))));
+    await Promise.all(deletes);
+    await addDoc(collection(db,'activityLog'),{icon:'🗑',cls:'red',text:`Collection cleared: ${collName} (${snap.size} records deleted).`,timestamp:serverTimestamp()});
+    showNotif('✅','Cleared!',successMsg);
   }catch(e){showNotif('⚠','Error',e.message);}
 };
 
